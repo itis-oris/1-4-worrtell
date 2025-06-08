@@ -6,10 +6,7 @@ pom.xml.*
 !.gitkeep
 
 ### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -30,3 +27,7 @@ Thumbs.db
 *.swp
 .env
 *.env
+
+src/main/resources/archetype-resources
+src/main/resources/META-INF
+src/main/resources/**/*.cache
