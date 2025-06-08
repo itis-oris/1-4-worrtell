@@ -1,0 +1,44 @@
+spring:
+  profiles:
+    active: dev
+  docker:
+    compose:
+      enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: wortel
+    password: "1563"
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  session:
+    jdbc:
+      initialize-schema: always
+#  mail:
+#    host: smtp.yandex.ru
+#    port: 587
+#    username: diakhmadullina@yandex.ru
+#    password: ${YANDEX_MAIL_ZEN_PASSWORD}
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+
+server:
+  port: 8080
+  url: http://localhost:8080
+
+debug: true
+
+yandex:
+  disk:
+    base-url: https://cloud-api.yandex.net/v1/disk
+    public-url: https://disk.yandex.ru/client/disk/meshok
+    access-token: y0__xCG96bWAxjuwzcg_Z7FghNN0TNgJYEPgT9Tb38nxzKYp-DGjw
+
+meshok:
+  access-token: f3cfb2cb5903df0f48231453f1877108
+  base-url: https://meshok.net/i/
