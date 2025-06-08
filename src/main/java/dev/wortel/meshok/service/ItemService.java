@@ -5,7 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import dev.wortel.meshok.helper.PictureHelper;
 import dev.wortel.meshok.repository.ItemRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +21,10 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final YandexDiskService diskService;
     private final PictureHelper pictureHelper;
+
+    public Page<Item> getAllItems(int page, int size) {
+        return itemRepository.findAll(PageRequest.of(page, size));
+    }
 
     public List<Long> filterNonExistingIds(List<Long> inputIds) {
         List<Long> existingIds = filterExistingIds(inputIds);
