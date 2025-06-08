@@ -7,8 +7,11 @@ import dev.wortel.meshok.helper.PictureHelper;
 import dev.wortel.meshok.repository.ItemRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collections;
@@ -24,6 +27,26 @@ public class ItemService {
 
     public Page<Item> getAllItems(int page, int size) {
         return itemRepository.findAll(PageRequest.of(page, size));
+    }
+
+    public Item getItemById(Long id) {
+        return itemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item not found"));
+    }
+
+    public Page<Item> searchItems(String query, int page, int size) {
+        String searchTerm = query.trim();
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+
+        if (searchTerm.isEmpty()) {
+            return itemRepository.findAll(pageable);
+        }
+
+        return itemRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                searchTerm,
+                searchTerm,
+                pageable
+        );
     }
 
     public List<Long> filterNonExistingIds(List<Long> inputIds) {

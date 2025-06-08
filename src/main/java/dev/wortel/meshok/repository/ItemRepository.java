@@ -16,6 +16,12 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Long> findExistingIds(@Param("ids") List<Long> ids);
 
     Page<Item> findAll(Pageable pageable);
+
     Page<Item> findByCategory(String category, Pageable pageable);
-    Page<Item> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    Page<Item> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            String name,
+            String description,
+            Pageable pageable
+    );
 }
