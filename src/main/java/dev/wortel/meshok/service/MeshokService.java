@@ -50,9 +50,7 @@ public class MeshokService {
 
     private List<Item> getItems(List<Long> idList) {
         List<Item> items = new LinkedList<>();
-        idList.forEach(id -> {
-            items.add(itemMapper.toEntity(jsonParser.toItem(meshokAPI.getItemInfo(id.toString())), this, pictureHelper));
-        });
+        idList.forEach(id -> items.add(itemMapper.toEntity(jsonParser.toItem(meshokAPI.getItemInfo(id.toString())), this, pictureHelper)));
         return items;
     }
 

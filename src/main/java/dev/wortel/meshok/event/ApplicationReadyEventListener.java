@@ -22,17 +22,17 @@ public class ApplicationReadyEventListener {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void onApplicationReady() {
-        log.info("Application ready");
-        if (userRepository.findByEmail(ADMIN_USERNAME).isEmpty()) {
-            User user = new User()
-                    .setEmail(ADMIN_EMAIL)
-                    .setHashPassword(passwordEncoder.encode("123"))
-                    .setRole(UserRole.ADMIN)
-                    .setStatus(UserStatus.ACTIVE);
-
-            userRepository.save(user);
-        }
-    }
+//    @EventListener(ApplicationReadyEvent.class)
+//    public void onApplicationReady() {
+//        log.info("Application ready");
+//        if (userRepository.findByEmail(ADMIN_USERNAME).isEmpty()) {
+//            User user = new User()
+//                    .setEmail(ADMIN_EMAIL)
+//                    .setHashPassword(passwordEncoder.encode("123"))
+//                    .setRole(UserRole.ADMIN)
+//                    .setStatus(UserStatus.ACTIVE);
+//
+//            userRepository.save(user);
+//        }
+//    }
 }

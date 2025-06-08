@@ -10,7 +10,7 @@ spring:
     password: "1563"
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
   session:
     jdbc:
