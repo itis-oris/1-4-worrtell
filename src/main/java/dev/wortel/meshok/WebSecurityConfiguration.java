@@ -18,6 +18,18 @@ public class WebSecurityConfiguration {
 //                        .requestMatchers("/hello").hasRole("ADMIN")
 //                        .requestMatchers("/registration").anonymous()
                         .anyRequest().permitAll())
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                        .defaultSuccessUrl("/items", true)
+                        .failureUrl("/login?error=true")
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login")
+                        .permitAll()
+                )
                 .formLogin(Customizer.withDefaults());
 //                .oneTimeTokenLogin(Customizer.withDefaults())
 //                .rememberMe(Customizer.withDefaults())

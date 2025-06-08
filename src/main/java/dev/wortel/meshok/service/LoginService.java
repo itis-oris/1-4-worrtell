@@ -1,18 +1,20 @@
 package dev.wortel.meshok.service;
 
-import lombok.RequiredArgsConstructor;
+import dev.wortel.meshok.dto.LoginForm;
 import dev.wortel.meshok.dto.RegistrationForm;
+import dev.wortel.meshok.entity.User;
 import dev.wortel.meshok.exception.UserAlreadyExistException;
 import dev.wortel.meshok.mapper.UserMapper;
 import dev.wortel.meshok.repository.UserRepository;
-import dev.wortel.meshok.entity.User;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class RegistrationService {
+public class LoginService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -20,16 +22,10 @@ public class RegistrationService {
     private final ConfirmService confirmService;
 
 
-    public void createUser(RegistrationForm form) {
-        userRepository.findByEmail(form.getEmail())
-                .ifPresent(user -> {
-                    throw new UserAlreadyExistException("user exist");
-                });
-
-        String encode = passwordEncoder.encode(form.getPassword());
-        User user = userMapper.mapToUser(form, encode);
-        user = userRepository.save(user);
-
-        confirmService.confirm(user.getEmail(), user.getEmail());
+    public boolean login(LoginForm form) {
+        log.info("Login form: {}", form);
+        return userRepository.findByEmail(form.getEmail())
+                .map(user -> passwordEncoder.matches(form.getPassword(), user.getHashPassword()))
+                .orElse(false);
     }
 }
