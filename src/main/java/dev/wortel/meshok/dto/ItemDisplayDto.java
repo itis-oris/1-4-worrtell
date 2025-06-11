@@ -1,19 +1,14 @@
-package dev.wortel.meshok.entity;
+package dev.wortel.meshok.dto;
 
-import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-@Entity
-public class Item {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ItemDisplayDto {
     private Long id;
-    @Column(name = "meshok_id")
-    private Long meshokId;
-    @Column(length = 500)
+    private Long meshok_id;
     private String name;
-    @Column(length = 500)
     private String category;
     private String saleType;
     private String longevity;
@@ -32,8 +27,5 @@ public class Item {
     private String city;
     private String status;
     private String price;
-    @Column(length = 500)
-    private String deliveryText;
-    @Column(length = 2000)
-    private String description;
+    private List<String> pictures;
 }
