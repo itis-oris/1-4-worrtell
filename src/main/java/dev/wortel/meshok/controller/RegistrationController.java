@@ -34,6 +34,6 @@ public class RegistrationController {
 
         service.createUser(registrationForm);
 
-        return "redirect:/hello";
+        return "redirect:/items";
     }
 }
