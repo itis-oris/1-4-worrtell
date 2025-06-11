@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<#import "/spring.ftl" as spring/>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Войти - Аккаунт</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<#include "/fragments/navbar.ftlh">
+<div class="container">
+    <div class="alert alert-warning mt-4 text-center" role="alert">
+        <h4 class="alert-heading"><i class="bi bi-exclamation-circle"></i> Вход в личный кабинет</h4>
+        <p>Чтобы получить доступ к информации о профиле, пожалуйста, <a href="/login" class="alert-link">войдите</a> или <a href="/register" class="alert-link">зарегистрируйтесь</a>.</p>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
