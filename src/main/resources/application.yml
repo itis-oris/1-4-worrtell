@@ -15,9 +15,9 @@ spring:
   session:
     jdbc:
       initialize-schema: always
-#  mail:
-#    host: smtp.yandex.ru
-#    port: 587
+
+  freemarker:
+    template-loader-path: classpath:/templates/
 #    username: diakhmadullina@yandex.ru
 #    password: ${YANDEX_MAIL_ZEN_PASSWORD}
 #    properties:
@@ -36,8 +36,15 @@ debug: true
 yandex:
   disk:
     base-url: https://cloud-api.yandex.net/v1/disk
+    webdav-url: https://webdav.yandex.ru/
     public-url: https://disk.yandex.ru/client/disk/meshok
     access-token: y0__xCG96bWAxjuwzcg_Z7FghNN0TNgJYEPgT9Tb38nxzKYp-DGjw
+  s3:
+    access-key: YCAJEoqWkMNns1jXfYwQtdqIU
+    secret-key: YCN-V0H_cYN41KlMZfKSUi05jLmeWh6nca5EjRGl
+    bucket: meshok
+    endpoint: https://storage.yandexcloud.net
+    region: ru-central1
 
 meshok:
   access-token: f3cfb2cb5903df0f48231453f1877108

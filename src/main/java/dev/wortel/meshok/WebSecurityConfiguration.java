@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfiguration {
@@ -15,9 +14,9 @@ public class WebSecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         HttpSecurity httpSecurity = http.authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers("/hello").hasRole("ADMIN")
-//                        .requestMatchers("/registration").anonymous()
-                        .anyRequest().permitAll())
+                        .requestMatchers("/registration", "/login").permitAll()
+                        //.anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
@@ -29,13 +28,12 @@ public class WebSecurityConfiguration {
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login")
                         .permitAll()
-                )
-                .formLogin(Customizer.withDefaults());
+                );
+//                .formLogin(Customizer.withDefaults());
 //                .oneTimeTokenLogin(Customizer.withDefaults())
 //                .rememberMe(Customizer.withDefaults())
 //                .oauth2Login(Customizer.withDefaults());
 
         return httpSecurity.build();
     }
-
 }

@@ -17,7 +17,7 @@
                 </div>
                 <div class="card-body">
                     <@spring.bind "registrationForm"/>
-                    <form action="registration" method="post" <#if spring.status.errors?exists>class="was-validated"</#if>>
+                    <form action="/registration" method="post" <#if spring.status.errors?exists>class="was-validated"</#if>>
                         <div class="mb-3">
                             <label for="email" class="form-label">Электронная почта</label>
                             <@spring.formInput "registrationForm.email" "class=\"form-control\" id=\"email\" name=\"email\" required" "text"/>
