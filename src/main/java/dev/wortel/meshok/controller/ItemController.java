@@ -1,7 +1,10 @@
 package dev.wortel.meshok.controller;
 
+import dev.wortel.meshok.dto.ItemDisplayDto;
 import dev.wortel.meshok.entity.Item;
 import dev.wortel.meshok.entity.User;
+import dev.wortel.meshok.helper.PictureHelper;
+import dev.wortel.meshok.mapper.ItemMapper;
 import dev.wortel.meshok.repository.ItemRepository;
 import dev.wortel.meshok.security.details.UserDetailsImpl;
 import dev.wortel.meshok.service.ItemService;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.security.Principal;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -23,8 +27,9 @@ import java.security.Principal;
 @RequestMapping("/items")
 public class ItemController {
 
-    private final ItemRepository itemRepository;
     private final ItemService itemService;
+    private final ItemMapper itemMapper;
+    private final PictureHelper pictureHelper;
 
     @GetMapping
     public String getAllItems(
@@ -32,14 +37,18 @@ public class ItemController {
             @RequestParam(defaultValue = "12") int size,
             Model model) {
         Page<Item> itemPage = itemService.getAllItems(page, size);
-        model.addAttribute("items", itemPage.getContent());
+        List<ItemDisplayDto> displayDtos = itemPage.getContent().stream()
+                .map(item -> itemMapper.toItemDisplayDto(item, pictureHelper))
+                .toList();
+        model.addAttribute("items", displayDtos);
         return "items/list";
     }
 
     @GetMapping("/{id}")
     public String getItemById(@PathVariable Long id, Model model) {
         Item item = itemService.getItemById(id);
-        model.addAttribute("item", item);
+        ItemDisplayDto dto = itemMapper.toItemDisplayDto(item, pictureHelper);
+        model.addAttribute("item", dto);
         return "items/details";
     }
 
@@ -50,12 +59,14 @@ public class ItemController {
             @RequestParam(defaultValue = "12") int size,
             Model model) {
         Page<Item> itemPage = itemService.searchItems(query, page, size);
-        model.addAttribute("items", itemPage.getContent());
+        List<ItemDisplayDto> displayDtos = itemPage.getContent().stream()
+                .map(item -> itemMapper.toItemDisplayDto(item, pictureHelper))
+                .toList();
+        model.addAttribute("items", displayDtos);
         model.addAttribute("searchQuery", query);
         log.info("Search {}", query);
         return "items/list";
     }
-
 //    @GetMapping("/profile")
 //    public String showProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 //        User user = userDetails.getUser();

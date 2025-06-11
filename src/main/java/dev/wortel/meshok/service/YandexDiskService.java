@@ -1,19 +1,19 @@
 package dev.wortel.meshok.service;
 
+import com.github.sardine.SardineFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
-
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -22,20 +22,19 @@ import org.springframework.web.client.RestClientException;
 @Service
 public class YandexDiskService {
     @Value("${yandex.disk.base-url}")
-    private static String BASE_URL = "https://cloud-api.yandex.net/v1/disk";
-
+    private String BASE_URL;
+    @Value("${yandex.disk.webdav-url}")
+    private String WEBDAV_URL;
+    @Value("${yandex.disk.access-token}")
+    private String accessToken;
     private final RestClient restClient;
 
-    public YandexDiskService(@Value("${yandex.disk.access-token}") String accessToken) {
+    public YandexDiskService() {
         this.restClient = RestClient.builder()
                 .defaultHeader("Authorization", "OAuth " + accessToken)
                 .build();
     }
 
-    /**
-     * Загружает файл на Яндекс.Диск с повторами при ошибках.
-     * Возвращает public URL или null при неудаче.
-     */
     @Retryable(
             maxAttempts = 3,
             backoff = @Backoff(delay = 2000),
@@ -45,9 +44,9 @@ public class YandexDiskService {
         String fullPath = folderPath + "/" + filename;
         log.info("Uploading file: {}", fullPath);
 
-        createFolder(folderPath);          // Создаём папку (с внутренним retry)
-        uploadFromUrl(imageUrl, fullPath); // Загружаем файл
-        return makePublic(fullPath);       // Делаем публичным
+        createFolder(folderPath);
+        uploadFromUrl(imageUrl, fullPath);
+        return makePublic(fullPath);
     }
 
     @Retryable(maxAttempts = 2, backoff = @Backoff(delay = 1000))
@@ -65,7 +64,7 @@ public class YandexDiskService {
     private void uploadFromUrl(String fileUrl, String savePath) {
         try {
             String uploadUrl = getUploadUrl(savePath);
-            doUpload(fileUrl, uploadUrl);  // Основная загрузка с retry
+            doUpload(fileUrl, uploadUrl);
         } catch (Exception e) {
             log.error("Failed to upload file from URL: {}", fileUrl, e);
             throw new RuntimeException(e);
@@ -115,5 +114,26 @@ public class YandexDiskService {
     private String recoverUpload(Exception e, String imageUrl, String folderPath, String filename) {
         log.error("All retry attempts failed for file: {}/{}. Error: {}", folderPath, filename, e.getMessage());
         return null;
+    }
+
+    @Cacheable(value = "photoCache", key = "#lotId + ':' + #fileName")
+    public byte[] getPhotoBytes(String folderPath, String fileName, Long lotId) throws Exception {
+        log.info("Загрузка изображения с Яндекс.Диск: lotId={}, fileName={}", lotId, fileName);
+        log.info("Token {}", accessToken);
+        String safePath = folderPath.startsWith("/") ? folderPath.substring(1) : folderPath;
+        if (!safePath.endsWith("/")) safePath += "/";
+        log.info("WEBDAV_URL + safePath + fileName {} {} {}", WEBDAV_URL, safePath, fileName);
+        String url = WEBDAV_URL + safePath + fileName;
+
+        log.info("Попытка скачать файл с URL: {}", url);
+
+        try (var input = SardineFactory.begin(accessToken, "").get(url)) {
+            byte[] bytes = input.readAllBytes();
+            log.info("Успешно скачано {} байт для {}:{}", bytes.length, lotId, fileName);
+            return bytes;
+        } catch (Exception e) {
+            log.info("Ошибка при попытке скачать изображение {}:{} с Диска — {}", lotId, fileName, e.getMessage());
+            throw e;
+        }
     }
 }

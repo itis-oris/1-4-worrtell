@@ -9,11 +9,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.server.ResponseStatusException;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,6 +22,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final YandexDiskService diskService;
     private final PictureHelper pictureHelper;
+    private final YandexS3Service s3Service;
 
     public Page<Item> getAllItems(int page, int size) {
         return itemRepository.findAll(PageRequest.of(page, size));
@@ -32,6 +31,11 @@ public class ItemService {
     public Item getItemById(Long id) {
         return itemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Item not found"));
+    }
+
+    public Item getItemByMeshokId(Long id) {
+        return itemRepository.findByMeshokId(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
     }
 
     public Page<Item> searchItems(String query, int page, int size) {
@@ -72,23 +76,21 @@ public class ItemService {
             savePictures(item);
             itemRepository.save(item);
         } catch (Exception e) {
-            log.error("Failed to save item {}: {}", item.getMeshok_id(), e.getMessage());
+            log.error("Failed to save item {}: {}", item.getMeshokId(), e.getMessage());
         }
     }
 
     private void savePictures(Item item) {
         int n = Integer.parseInt(item.getNumberOfPictures());
-        String id = String.valueOf(item.getMeshok_id());
+//        String id = String.valueOf(item.getMeshokId());
 
         for (int i = 0; i < n; i++) {
-            String url = diskService.uploadFile(
-                    pictureHelper.path(id, i),
-                    pictureHelper.newFolder(id),
-                    pictureHelper.name(i)
-            );
-            if (url == null) {
-                log.warn("Picture {} for item {} not uploaded", i, id);
-            }
+//            String url = diskService.uploadFile(
+//                    pictureHelper.path(id, i),
+//                    pictureHelper.newFolder(id),
+//                    pictureHelper.name(i)
+//            );
+            s3Service.fetchAndUploadToS3(item, i);
         }
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
@@ -24,4 +25,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             String description,
             Pageable pageable
     );
+
+    Optional<Item> findByMeshokId(Long meshokId);
 }
