@@ -39,9 +39,4 @@ public class TestController {
     public String service() {
         return yandexS3Service.fetchAndUploadToS3(itemService.getItemByMeshokId(325179466L), 1);
     }
-
-//    @GetMapping("/api")
-//    public String testApi() {
-//
-//    }
 }

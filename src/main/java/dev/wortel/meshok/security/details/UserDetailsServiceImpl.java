@@ -1,7 +1,6 @@
 package dev.wortel.meshok.security.details;
 
 import dev.wortel.meshok.repository.UserRepository;
-import dev.wortel.meshok.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;

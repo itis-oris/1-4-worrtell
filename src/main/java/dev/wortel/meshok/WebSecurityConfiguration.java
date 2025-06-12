@@ -15,7 +15,7 @@ public class WebSecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         HttpSecurity httpSecurity = http.authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/registration", "/login").permitAll()
-                        //.anyRequest().permitAll())
+                        .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -29,7 +29,6 @@ public class WebSecurityConfiguration {
                         .logoutSuccessUrl("/login")
                         .permitAll()
                 );
-//                .formLogin(Customizer.withDefaults());
 //                .oneTimeTokenLogin(Customizer.withDefaults())
 //                .rememberMe(Customizer.withDefaults())
 //                .oauth2Login(Customizer.withDefaults());

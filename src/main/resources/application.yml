@@ -16,22 +16,12 @@ spring:
     jdbc:
       initialize-schema: always
 
-  freemarker:
-    template-loader-path: classpath:/templates/
-#    username: diakhmadullina@yandex.ru
-#    password: ${YANDEX_MAIL_ZEN_PASSWORD}
-#    properties:
-#      mail:
-#        smtp:
-#          auth: true
-#          starttls:
-#            enable: true
+  thymeleaf:
+    prefix: classpath:/templates/
 
 server:
   port: 8080
   url: http://localhost:8080
-
-debug: true
 
 yandex:
   disk:
