@@ -5,9 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.example.repository.dictonary.UserRole;
-import org.example.repository.dictonary.UserStatus;
-
 import java.io.Serializable;
 
 import static jakarta.persistence.EnumType.STRING;

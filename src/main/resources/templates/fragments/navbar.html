@@ -1,0 +1,41 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/items">
+            <i class="bi bi-shop"></i> Магазин
+        </a>
+
+        <form class="w-100 d-flex mx-4" role="search" th:action="@{/items/search}" method="get">
+            <input class="form-control me-2"
+                   type="search"
+                   name="query"
+                   placeholder="Поиск товаров"
+                   aria-label="Search"
+                   th:value="${searchQuery}">
+            <button class="btn btn-outline-primary" type="submit">
+                <i class="bi bi-search"></i> Найти
+            </button>
+
+            <input type="hidden" name="page" value="0">
+            <input type="hidden" name="size" value="12">
+        </form>
+
+        <div class="d-flex align-items-center gap-3">
+            <a href="/account" class="btn btn-outline-secondary">
+                <i class="bi bi-person"></i> Аккаунт
+            </a>
+
+            <div sec:authorize="hasRole('ADMIN')">
+                <a href="/settings" class="btn btn-outline-secondary">
+                    <i class="bi bi-gear"></i> Продаю
+                </a>
+            </div>
+
+            <a href="/cart" class="btn btn-primary position-relative">
+                <i class="bi bi-cart"></i> Корзина
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    0
+                </span>
+            </a>
+        </div>
+    </div>
+</nav>

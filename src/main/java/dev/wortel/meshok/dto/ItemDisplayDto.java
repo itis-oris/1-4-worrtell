@@ -27,5 +27,6 @@ public class ItemDisplayDto {
     private String city;
     private String status;
     private String price;
+    private String description;
     private List<String> pictures;
 }
