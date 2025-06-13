@@ -25,7 +25,7 @@
             </a>
 
             <div sec:authorize="hasRole('OWNER')">
-                <a href="/items/create" class="btn btn-outline-secondary">
+                <a href="/orders/owner" class="btn btn-outline-secondary">
                     <i class="bi bi-gear"></i> Продаю
                 </a>
             </div>
@@ -33,9 +33,6 @@
             <div sec:authorize="hasRole('USER')">
                 <a href="/cart" class="btn btn-primary position-relative">
                     <i class="bi bi-cart"></i> Корзина
-<!--                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">-->
-<!--                    0-->
-<!--                </span>-->
                 </a>
             </div>
         </div>
