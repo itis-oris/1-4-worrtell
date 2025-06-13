@@ -1,10 +1,9 @@
 package dev.wortel.meshok.service;
 
-import dev.wortel.meshok.entity.Item;
-import dev.wortel.meshok.entity.ItemStatus;
+import entity.Item;
+import entity.ItemStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import dev.wortel.meshok.helper.PictureHelper;
 import dev.wortel.meshok.repository.ItemRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import static dev.wortel.meshok.entity.ItemStatus.ACTIVE;
+import static entity.ItemStatus.ACTIVE;
 
 @Slf4j
 @Service

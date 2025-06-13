@@ -1,6 +1,6 @@
 package dev.wortel.meshok.security.ott;
 
-import dev.wortel.meshok.entity.User;
+import entity.User;
 import dev.wortel.meshok.repository.UserRepository;
 import dev.wortel.meshok.util.MailSenderUtil;
 import jakarta.servlet.http.HttpServletRequest;

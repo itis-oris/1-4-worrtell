@@ -1,7 +1,7 @@
 package dev.wortel.meshok.mapper;
 
 import dev.wortel.meshok.dto.RegistrationForm;
-import dev.wortel.meshok.entity.User;
+import entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;

@@ -1,6 +1,6 @@
 package dev.wortel.meshok.service;
 
-import dev.wortel.meshok.entity.Item;
+import entity.Item;
 import dev.wortel.meshok.helper.PictureHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

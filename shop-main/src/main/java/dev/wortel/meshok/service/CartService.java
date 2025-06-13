@@ -1,7 +1,7 @@
 package dev.wortel.meshok.service;
 
 import dev.wortel.meshok.entity.Cart;
-import dev.wortel.meshok.entity.Item;
+import entity.Item;
 import dev.wortel.meshok.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

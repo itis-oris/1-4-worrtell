@@ -5,7 +5,7 @@ import dev.wortel.meshok.dto.RegistrationForm;
 import dev.wortel.meshok.exception.UserAlreadyExistException;
 import dev.wortel.meshok.mapper.UserMapper;
 import dev.wortel.meshok.repository.UserRepository;
-import dev.wortel.meshok.entity.User;
+import entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

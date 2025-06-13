@@ -1,8 +1,8 @@
 package dev.wortel.meshok.event;
 
-import dev.wortel.meshok.entity.User;
-import dev.wortel.meshok.entity.UserRole;
-import dev.wortel.meshok.entity.UserStatus;
+import entity.User;
+import entity.UserRole;
+import entity.UserStatus;
 import dev.wortel.meshok.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
