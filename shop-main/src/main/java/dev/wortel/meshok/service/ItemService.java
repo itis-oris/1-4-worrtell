@@ -49,11 +49,6 @@ public class ItemService {
                 .orElseThrow(() -> new RuntimeException("Item not found"));
     }
 
-    public Item getItemByMeshokId(Long id) {
-        return itemRepository.findByMeshokIdAndItemStatus(id, ACTIVE)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
-    }
-
     public Page<Item> searchItems(String query, int page, int size) {
         String searchTerm = query.trim();
         Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
@@ -69,47 +64,6 @@ public class ItemService {
                 searchTerm,
                 pageable
         );
-    }
-
-    public List<Long> filterNonExistingIds(List<Long> inputIds) {
-        List<Long> existingIds = filterExistingIds(inputIds);
-        return inputIds.stream()
-                .filter(id -> !existingIds.contains(id))
-                .toList();
-    }
-
-    public List<Long> filterExistingIds(List<Long> inputIds) {
-        if (inputIds == null || inputIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return itemRepository.findExistingIds(inputIds);
-    }
-
-    public void saveWithPictures(List<Item> items) {
-        items.forEach(this::saveWithPictures);
-    }
-
-    public void saveWithPictures(Item item) {
-        try {
-            savePictures(item);
-            itemRepository.save(item);
-        } catch (Exception e) {
-            log.error("Failed to save item {}: {}", item.getMeshokId(), e.getMessage());
-        }
-    }
-
-    private void savePictures(Item item) {
-        int n = Integer.parseInt(item.getNumberOfPictures());
-//        String id = String.valueOf(item.getMeshokId());
-
-        for (int i = 0; i < n; i++) {
-//            String url = diskService.uploadFile(
-//                    pictureHelper.path(id, i),
-//                    pictureHelper.newFolder(id),
-//                    pictureHelper.name(i)
-//            );
-            s3Service.fetchAndUploadToS3(item, i);
-        }
     }
 
     public Item createItem(Item item, MultipartFile[] images) {

@@ -1,0 +1,39 @@
+spring:
+  profiles:
+    active: dev
+  docker:
+    compose:
+      enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: wortel
+    password: "1563"
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  session:
+    jdbc:
+      initialize-schema: always
+  thymeleaf:
+    prefix: classpath:/templates/
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+server:
+  port: 8080
+  url: http://localhost:8080
+
+yandex:
+  s3:
+    access-key: YCAJEoqWkMNns1jXfYwQtdqIU
+    secret-key: YCN-V0H_cYN41KlMZfKSUi05jLmeWh6nca5EjRGl
+    bucket: meshok
+    endpoint: https://storage.yandexcloud.net
+    region: ru-central1
+
+meshok:
+  access-token: f3cfb2cb5903df0f48231453f1877108
+  base-url: https://meshok.net/i/

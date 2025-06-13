@@ -1,15 +1,14 @@
 package dev.wortel.meshok.service;
-
-import entity.Item;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import dev.wortel.meshok.helper.PictureHelper;
-import dev.wortel.meshok.mapper.ItemMapper;
-import dev.wortel.meshok.util.MeshokAPI;
 import dev.wortel.meshok.dto.CategoryDto;
 import dev.wortel.meshok.dto.LotDto;
+import entity.Item;
 import dev.wortel.meshok.helper.JsonParser;
+import dev.wortel.meshok.helper.PictureHelper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import dev.wortel.meshok.mapper.ItemMapper;
 import org.springframework.stereotype.Service;
+import dev.wortel.meshok.util.MeshokAPI;
 import java.util.LinkedList;
 import java.util.List;
 
