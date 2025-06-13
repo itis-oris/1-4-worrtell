@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="itemList">
+    <div th:attr="data-has-next=${hasNextPage}" style="display:none;"></div>
+
+    <div th:each="item : ${items}" class="col item-card">
+        <div class="card h-100 shadow-sm">
+            <img th:if="${!#lists.isEmpty(item.pictures)}" th:src="${item.pictures[0]}"
+                 class="card-img-top" alt="Изображение товара"
+                 style="height: 200px; object-fit: cover;">
+            <img th:if="${#lists.isEmpty(item.pictures)}" src="/images/no-image.jpg"
+                 class="card-img-top" alt="Нет изображения"
+                 style="height: 200px; object-fit: cover;">
+
+            <div class="card-body">
+                <h5 class="card-title" th:text="${item.name}">Название товара</h5>
+                <p class="card-text">
+                    <small class="text-muted" th:text="${item.category}">Категория</small>
+                </p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="h5 text-primary" th:text="${item.price + ' ₽'}">0 ₽</span>
+                    <a th:href="@{/items/{id}(id=${item.id})}" class="btn btn-sm btn-outline-primary">Подробнее</a>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <small class="text-muted">
+                    <i class="bi bi-clock"></i> <span th:text="${item.listDateTime}">01.01.2023</span>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

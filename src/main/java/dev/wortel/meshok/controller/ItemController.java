@@ -37,12 +37,23 @@ public class ItemController {
     public String getAllItems(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
+            @RequestParam(required = false, defaultValue = "false") boolean isAjax,
             Model model) {
         Page<Item> itemPage = itemService.getAllItems(page, size);
         List<ItemDisplayDto> displayDtos = itemPage.getContent().stream()
                 .map(item -> itemMapper.toItemDisplayDto(item, pictureHelper))
                 .toList();
+
+        // Добавляем данные в модель
         model.addAttribute("items", displayDtos);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("hasNextPage", itemPage.hasNext());
+
+        // Если AJAX-запрос, возвращаем только фрагмент элементов
+        if (isAjax) {
+            return "items/fragments/item-list :: itemList";
+        }
+
         return "items/list";
     }
 
