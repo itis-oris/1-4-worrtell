@@ -9,12 +9,7 @@ import java.util.Map;
 public class ResponseDto<T> {
     private int success;
     private Map<String, T> result;
-//    private String account;
-//    private String cost;
-//    private String balance;
-//    private String expire;
     private String error;
-
     public boolean isSuccessful() {
         return success == 1;
     }

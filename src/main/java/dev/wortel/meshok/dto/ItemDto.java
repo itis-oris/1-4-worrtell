@@ -14,7 +14,7 @@ public class ItemDto {
     private String listDateTime;
     private String endDateTime;
     private String quantity;
-    private String sold; //check "sold": "0"
+    private String sold;
     private String localDelivery;
     private String localDeliveryPrice;
     private String delivery;

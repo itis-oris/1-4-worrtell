@@ -17,22 +17,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("SELECT p.id FROM Item p WHERE p.id IN :ids")
     List<Long> findExistingIds(@Param("ids") List<Long> ids);
 
-//    List<Item> findAllByIdIn(List<Long> ids);
-//
-//    Page<Item> findAll(Pageable pageable);
-//
-//    Page<Item> findAllByItemStatus(ItemStatus itemStatus, Pageable pageable);
-//
-//    Page<Item> findByCategory(String category, Pageable pageable);
-//
-//    Page<Item> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-//            String name,
-//            String description,
-//            Pageable pageable
-//    );
-//
-//    Optional<Item> findByMeshokId(Long meshokId);
-
     List<Item> findAllByIdInAndItemStatus(List<Long> ids, ItemStatus itemStatus);
 
     Page<Item> findAllByItemStatus(ItemStatus itemStatus, Pageable pageable);

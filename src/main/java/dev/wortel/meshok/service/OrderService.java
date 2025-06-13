@@ -14,16 +14,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
+import static dev.wortel.meshok.entity.ItemStatus.SOLD;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class OrderService {
     private final OrderRepository orderRepository;
     private final CartService cartService;
-    private final ItemRepository itemRepository;
-    //private final EmailService emailService;
-    private final UserService userRepository;
     private final OrderMapper orderMapper;
+    private final ItemService itemService;
 
     @Transactional
     public Order createOrderFromCart(Long userId, OrderDto orderDTO) {
@@ -38,21 +38,11 @@ public class OrderService {
         order.setItems(cartItems);
         order.setTotalPrice(calculateTotalPrice(cartItems));
 
+        order = orderRepository.save(order);
+
         cartService.clearCart(userId);
-
-//        // Отправляем письмо с подтверждением
-//        if (orderDTO.getContactEmail() != null && !orderDTO.getContactEmail().isEmpty()) {
-//            emailService.sendOrderConfirmation(savedOrder, orderDTO.getContactEmail());
-//        } else {
-//            // Попытка найти email пользователя
-//            userRepository.findById(userId).ifPresent(user -> {
-//                if (user.getEmail() != null && !user.getEmail().isEmpty()) {
-//                    emailService.sendOrderConfirmation(savedOrder, user.getEmail());
-//                }
-//            });
-//        }
-
-        return orderRepository.save(order);
+        updateOrderStatus(order.getId(), OrderStatus.PENDING);
+        return order;
     }
 
     public Order getOrderById(Long orderId) {
@@ -69,11 +59,11 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
-    @Transactional
-    public Order updateOrderStatus(Long orderId, OrderStatus status)  {
+    public void updateOrderStatus(Long orderId, OrderStatus status)  {
         Order order = getOrderById(orderId);
         order.setStatus(status);
-        return orderRepository.save(order);
+        itemService.changeStatus(order.getItems(), SOLD);
+        orderRepository.save(order);
     }
 
     private double calculateTotalPrice(List<Item> cartItems) {
