@@ -166,7 +166,7 @@
         preview.innerHTML = '';
 
         Array.from(event.target.files).forEach((file, index) => {
-            if (index >= 10) return; // Ограничение на 10 изображений
+            if (index > 10) return;
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -188,7 +188,6 @@
         });
     });
 
-    // Валидация формы
     (function () {
         'use strict'
         const forms = document.querySelectorAll('.needs-validation');
