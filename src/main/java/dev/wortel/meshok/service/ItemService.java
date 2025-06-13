@@ -11,7 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -92,5 +94,25 @@ public class ItemService {
 //            );
             s3Service.fetchAndUploadToS3(item, i);
         }
+    }
+
+    public Item createItem(Item item, MultipartFile[] images) {
+        Item savedItem = itemRepository.save(item);
+
+        if (images != null && images.length > 0) {
+            List<String> imageUrls = new ArrayList<>();
+
+            for (int i = 0; i < images.length; i++) {
+                MultipartFile image = images[i];
+                if (!image.isEmpty()) {
+                    String imageUrl = s3Service.uploadToS3(image, savedItem, i);
+                    imageUrls.add(imageUrl);
+                }
+            }
+            log.info("Images {}", imageUrls);
+            savedItem.setNumberOfPictures(String.valueOf(imageUrls.size()));
+            savedItem = itemRepository.save(savedItem);
+        }
+        return savedItem;
     }
 }

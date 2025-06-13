@@ -1,5 +1,6 @@
 package dev.wortel.meshok.controller;
 
+import dev.wortel.meshok.dto.ItemCreateDto;
 import dev.wortel.meshok.dto.ItemDisplayDto;
 import dev.wortel.meshok.entity.Item;
 import dev.wortel.meshok.entity.User;
@@ -8,16 +9,17 @@ import dev.wortel.meshok.mapper.ItemMapper;
 import dev.wortel.meshok.repository.ItemRepository;
 import dev.wortel.meshok.security.details.UserDetailsImpl;
 import dev.wortel.meshok.service.ItemService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import java.security.Principal;
 import java.util.List;
 
@@ -66,6 +68,36 @@ public class ItemController {
         model.addAttribute("searchQuery", query);
         log.info("Search {}", query);
         return "items/list";
+    }
+
+    @GetMapping("/create")
+    public String showCreateForm(Model model) {
+        model.addAttribute("item", new ItemCreateDto());
+        return "items/create";
+    }
+
+    @PostMapping("/create")
+    public String createItem(@ModelAttribute("item") @Valid ItemCreateDto itemDto,
+                             BindingResult result,
+                             RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "items/create";
+        }
+
+        try {
+            Item savedItem = itemService.createItem(itemMapper.toEntity(itemDto), itemDto.getImages());
+            ItemDisplayDto item = itemMapper.fromCreateToItemDisplayDto(itemDto, Integer.parseInt(savedItem.getNumberOfPictures()),savedItem.getId(), pictureHelper);
+            log.info("Create item {}", item);
+
+            log.info("Created new item with ID: {}", savedItem.getId());
+            redirectAttributes.addFlashAttribute("successMessage", "Лот успешно создан!");
+
+            return "redirect:/items/" + savedItem.getId();
+        } catch (Exception e) {
+            log.error("Error creating item", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при создании лота: " + e.getMessage());
+            return "redirect:/items/create";
+        }
     }
 //    @GetMapping("/profile")
 //    public String showProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
