@@ -1,5 +1,6 @@
 package dev.wortel.meshok.entity;
 
+import entity.Item;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
