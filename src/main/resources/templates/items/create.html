@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создание нового лота</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">Создание нового лота</h1>
+            <p class="lead text-muted">Заполните форму, чтобы добавить новый лот на платформу</p>
+        </div>
+    </div>
+
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+    <div class="row">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form th:action="@{/items/create}" th:object="${item}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-bold">Название</label>
+                            <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                            <div class="invalid-feedback">Пожалуйста, укажите название товара</div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="category" class="form-label fw-bold">Категория</label>
+                            <input type="text" class="form-control" id="category" th:field="*{category}" required>
+                            <div class="invalid-feedback">Пожалуйста, укажите категорию</div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="price" class="form-label fw-bold">Цена</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₽</span>
+                                <input type="text" class="form-control" id="price" th:field="*{price}" required>
+                                <div class="invalid-feedback">Пожалуйста, укажите цену</div>
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label fw-bold">Описание</label>
+                            <textarea class="form-control" id="description" th:field="*{description}" rows="5"></textarea>
+                            <span class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="condition" class="form-label fw-bold">Состояние</label>
+                                <select class="form-select" id="condition" th:field="*{condition}">
+                                    <option value="Новый">Новый</option>
+                                    <option value="Отличное">Отличное</option>
+                                    <option value="Хорошее">Хорошее</option>
+                                    <option value="Удовлетворительное">Удовлетворительное</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="quantity" class="form-label fw-bold">Количество</label>
+                                <input type="number" class="form-control" id="quantity" th:field="*{quantity}" value="1" min="1">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="city" class="form-label fw-bold">Город</label>
+                            <input type="text" class="form-control" id="city" th:field="*{city}">
+                        </div>
+
+                        <hr class="my-4">
+                        <h5 class="mb-3">Доставка</h5>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="localDelivery" class="form-label">Локальная доставка</label>
+                                <select class="form-select" id="localDelivery" th:field="*{localDelivery}">
+                                    <option value="1">Да</option>
+                                    <option value="0">Нет</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="localDeliveryPrice" class="form-label">Цена локальной доставки</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₽</span>
+                                    <input type="text" class="form-control" id="localDeliveryPrice" th:field="*{localDeliveryPrice}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="delivery" class="form-label">Доставка по стране</label>
+                                <select class="form-select" id="delivery" th:field="*{delivery}">
+                                    <option value="1">Да</option>
+                                    <option value="0">Нет</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="countryDeliveryPrice" class="form-label">Цена доставки по стране</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₽</span>
+                                    <input type="text" class="form-control" id="countryDeliveryPrice" th:field="*{countryDeliveryPrice}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <h5 class="mb-3">Изображения</h5>
+
+                        <div class="mb-4">
+                            <label for="images" class="form-label">Загрузите фотографии товара</label>
+                            <input type="file" class="form-control" id="images" name="images" multiple accept="image/*">
+                            <div class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i> Вы можете загрузить несколько изображений (максимум 10). Поддерживаемые форматы: JPG, PNG, WEBP.
+                            </div>
+                            <div id="image-preview" class="row mt-3 g-2"></div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a th:href="@{/items}" class="btn btn-outline-secondary me-md-2">Отмена</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-1"></i> Создать лот
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-5 d-none d-md-block">
+            <div class="card bg-light shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-primary"><i class="bi bi-info-circle"></i> Рекомендации</h5>
+                    <p class="card-text">Несколько советов для успешного создания лота:</p>
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item bg-transparent"><i class="bi bi-check-circle text-success me-2"></i> Используйте четкие и информативные названия</li>
+                        <li class="list-group-item bg-transparent"><i class="bi bi-check-circle text-success me-2"></i> Добавьте подробное описание товара</li>
+                        <li class="list-group-item bg-transparent"><i class="bi bi-check-circle text-success me-2"></i> Загрузите качественные фотографии</li>
+                        <li class="list-group-item bg-transparent"><i class="bi bi-check-circle text-success me-2"></i> Укажите точную информацию о доставке</li>
+                        <li class="list-group-item bg-transparent"><i class="bi bi-check-circle text-success me-2"></i> Проверьте правильность указанной цены</li>
+                    </ul>
+                    <div class="alert alert-info">
+                        <i class="bi bi-lightbulb"></i> Качественные фотографии увеличивают шансы продажи товара на 70%!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('images').addEventListener('change', function(event) {
+        const preview = document.getElementById('image-preview');
+        preview.innerHTML = '';
+
+        Array.from(event.target.files).forEach((file, index) => {
+            if (index >= 10) return; // Ограничение на 10 изображений
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const col = document.createElement('div');
+                col.className = 'col-4 col-md-6 col-lg-4';
+
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'ratio ratio-1x1 rounded bg-light border';
+
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'rounded object-fit-cover';
+
+                imgContainer.appendChild(img);
+                col.appendChild(imgContainer);
+                preview.appendChild(col);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    // Валидация формы
+    (function () {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+</body>
+</html>
