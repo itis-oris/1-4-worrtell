@@ -17,15 +17,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class MeshokService {
-//    private final ImageUtil imageUtil;
     private final MeshokAPI meshokAPI;
     private final JsonParser jsonParser;
     private final ItemMapper itemMapper;
     private final PictureHelper pictureHelper;
     private final ItemService itemService;
-
-    // methods that check just status of existing items (for update mode)
-    // method that filters id's of lots from response that don't exist yet
 
     private CategoryDto getCategory(Long id) {
         return jsonParser.toCategory(meshokAPI.getCategoryInfo(id.toString()));
@@ -37,12 +33,10 @@ public class MeshokService {
 
         result.insert(0, category.getName());
 
-        //log.info(result.toString());
         Long categoryId;
         while ((categoryId = category.getParentId()) != 0L) {
             category = getCategory(categoryId);
             result.insert(0," ").insert(0,category.getName());
-            //log.info(result.toString());
         }
 
         return result.toString();
@@ -67,7 +61,6 @@ public class MeshokService {
         return new JsonParser().toLotList(mock);
     }
 
-    //
     public List<Item> getNewItems() {
         List<Long> idList = getAllLots().stream().map(LotDto::getId).toList();
         List<Long> newIdList = itemService.filterNonExistingIds(idList);

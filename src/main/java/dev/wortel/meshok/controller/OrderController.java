@@ -57,14 +57,10 @@ public class OrderController {
             return "redirect:/login";
         }
 
-        Long userId = getUserId(principal);
         Order order = orderService.getOrderById(id);
 
         List<ItemDisplayDto> itemDtos = order.getItems().stream()
-                .map(item -> {
-                    // Здесь используйте ваш маппер или создавайте DTO вручную
-                    return itemMapper.toItemDisplayDto(item, pictureHelper);
-                })
+                .map(item -> itemMapper.toItemDisplayDto(item, pictureHelper))
                 .toList();
 
         model.addAttribute("order", order);
@@ -109,12 +105,10 @@ public class OrderController {
             return "redirect:/cart";
         }
 
-        // Преобразуем товары в DTO для отображения
         List<ItemDisplayDto> displayDtos = cartItems.stream()
                 .map(item -> itemMapper.toItemDisplayDto(item, pictureHelper))
                 .toList();
 
-        // Рассчитываем общую сумму
         Double totalPrice =cartItems.stream()
                 .mapToDouble(item -> Double.parseDouble(item.getPrice()))
                 .sum();

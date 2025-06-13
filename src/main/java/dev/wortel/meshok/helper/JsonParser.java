@@ -26,11 +26,6 @@ public class JsonParser {
         return new ArrayList<>(response.getResult().values());
     }
 
-    public List<Item> toItemList(String jsonResponse) {
-        ResponseDto<Item> response = JsonUtil.read(jsonResponse, new TypeReference<>() {});
-        return new ArrayList<>(response.getResult().values());
-    }
-
     public CategoryDto toCategory(String jsonResponse) {
         try {
             SingleResponseDto<CategoryDto> response = JsonUtil.read(

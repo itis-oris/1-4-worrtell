@@ -25,9 +25,16 @@ import static dev.wortel.meshok.entity.ItemStatus.ACTIVE;
 @RequiredArgsConstructor
 public class ItemService {
     private final ItemRepository itemRepository;
-    private final YandexDiskService diskService;
-    private final PictureHelper pictureHelper;
     private final YandexS3Service s3Service;
+
+    public void changeStatus(Item item, ItemStatus status) {
+        item.setItemStatus(status);
+        itemRepository.save(item);
+    }
+
+    public void changeStatus(List<Item> items, ItemStatus status) {
+        items.forEach(item -> {changeStatus(item, status);});
+    }
 
     public List<Item> getItemsByIds(List<Long> ids) {
         return itemRepository.findAllByIdInAndItemStatus(ids, ACTIVE);

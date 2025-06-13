@@ -7,9 +7,4 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LotDto {
     Long id;
-//    String saleType;
-//    String quantity;
-//    String sold;
-//    String curencyId;
-//    String price;
 }
