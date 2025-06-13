@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -47,70 +49,125 @@
 </head>
 <body>
 <div th:replace="~{fragments/navbar}"></div>
+<div class="container py-4">
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 
-<div class="container mt-4">
     <div class="row">
-        <div class="col-md-5">
+        <div class="col-md-6">
             <div class="square-image-container">
-                <img class="square-image" id="mainImage"
-                     th:if="${item.pictures != null and !item.pictures.isEmpty()}"
+                <img th:if="${!#lists.isEmpty(item.pictures)}"
                      th:src="${item.pictures[0]}"
-                     th:alt="${item.name}">
-                <img class="square-image" th:unless="${item.pictures != null and !item.pictures.isEmpty()}"
-                     src="/static/no-image.png" alt="Нет фото">
+                     id="mainImage"
+                     class="square-image"
+                     alt="Изображение товара">
+                <img th:if="${#lists.isEmpty(item.pictures)}"
+                     src="/static/no-image.png"
+                     class="square-image"
+                     alt="Нет фото">
             </div>
-            <div class="thumbnail-container" th:if="${item.pictures != null and !item.pictures.isEmpty()}">
-                <img th:each="pic,iter : ${item.pictures}"
+            <div class="thumbnail-container" th:if="${!#lists.isEmpty(item.pictures) && #lists.size(item.pictures) > 1}">
+                <img th:each="pic, picStat : ${item.pictures}"
                      th:src="${pic}"
-                     th:attr="class=${iter.first} ? 'thumbnail active' : 'thumbnail'"
-                     alt="thumbnail"
-                     onclick="changeImage(this)">
+                     th:class="${picStat.index == 0 ? 'thumbnail active' : 'thumbnail'}"
+                     th:onclick="'changeImage(this)'"
+                     alt="thumbnail">
             </div>
         </div>
 
-        <div class="col-md-7">
-            <h1 th:text="${item.name}"></h1>
-            <span class="badge bg-secondary mb-3" th:text="${item.category}"></span>
+        <div class="col-md-6">
+            <h1 class="mb-2" th:text="${item.name}">Название товара</h1>
+            <span class="badge bg-secondary mb-3" th:text="${item.category}">Категория</span>
+
+            <div class="card mb-3" sec:authorize="hasRole('OWNER')">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">Панель администратора</h5>
+                    <div class="d-flex gap-2">
+                        <a th:href="@{/items/{id}/edit(id=${item.id})}" class="btn btn-warning">
+                            <i class="bi bi-pencil-square"></i> Редактировать
+                        </a>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="bi bi-trash"></i> Удалить
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <form th:action="@{/cart/add/{id}(id=${item.id})}" method="post">
+                    <button type="submit" class="btn btn-primary btn-lg py-3 fw-bold">
+                        <i class="bi bi-cart-plus me-2"></i> Добавить в корзину
+                    </button>
+                </form>
+            </div>
+
             <div class="mb-3">
-                <h3 th:text="${item.price} + ' руб.'"></h3>
-                <span class="text-muted" th:if="${item.sold != null and item.quantity != null}">
-                    <i class="bi bi-box"></i> Осталось:
-                    <span th:text="${item.quantity} + ' шт.'"></span>
+                <h3 class="text-primary mb-2" th:text="${item.price + ' ₽'}">0 ₽</h3>
+                <span class="text-muted" th:if="${item.longevity != null && !item.longevity.isEmpty()}">
+                    <i class="bi bi-clock"></i> Осталось:
+                    <span th:text="${item.longevity}">5 дней</span>
                 </span>
             </div>
-            <div class="mb-3">
+            <div class="mb-4">
                 <button class="btn btn-primary btn-lg py-3 fw-bold">Купить сейчас</button>
             </div>
-            <div class="mb-3">
+            <div class="mb-4">
                 <h5><i class="bi bi-info-circle"></i> Описание</h5>
-                <p th:text="${item.description != null} ? ${item.description} : ''"></p>
+                <p class="text-muted" th:text="${item.description}">Описание товара</p>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-4">
                 <h5><i class="bi bi-truck"></i> Доставка</h5>
-                <ul>
-                    <li>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span>По городу:</span>
-                        <span th:text="${item.localDelivery == 'true'} ? ${item.localDeliveryPrice} + ' руб.' : 'Нет'"></span>
+                        <span th:text="${item.localDelivery == '1' ? item.localDeliveryPrice + ' ₽' : 'Недоступно'}">0 ₽</span>
                     </li>
-                    <li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span>По стране:</span>
-                        <span th:text="${item.delivery == 'true'} ? ${item.countryDeliveryPrice} + ' руб.' : 'Нет'"></span>
+                        <span th:text="${item.delivery == '1' ? item.countryDeliveryPrice + ' ₽' : 'Недоступно'}">0 ₽</span>
                     </li>
-                    <li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span>Международная:</span>
-                        <span th:text="${item.delivery == 'true'} ? ${item.worldDeliveryPrice} + ' руб.' : 'Нет'"></span>
+                        <span th:text="${item.worldDeliveryPrice != null && !item.worldDeliveryPrice.isEmpty() ? item.worldDeliveryPrice + ' ₽' : 'Недоступно'}">0 ₽</span>
                     </li>
                 </ul>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-4">
                 <h5><i class="bi bi-card-list"></i> Информация</h5>
-                <ul>
-                    <li><span>Состояние:</span> <span th:text="${item.condition != null} ? ${item.condition} : ''"></span></li>
-                    <li><span>Город:</span> <span th:text="${item.city != null} ? ${item.city} : ''"></span></li>
-                    <li><span>Дата публикации:</span> <span th:text="${item.listDateTime != null} ? ${item.listDateTime} : ''"></span></li>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Состояние:</span> <span th:text="${item.condition}">Новый</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Город:</span> <span th:text="${item.city}">Москва</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Дата публикации:</span> <span th:text="${item.listDateTime}">01.01.2023</span>
+                    </li>
                 </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Подтверждение удаления</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены, что хотите удалить этот товар? Это действие нельзя отменить.</p>
+                <p><strong th:text="${item.name}">Название товара</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form th:action="@{/items/{id}/delete(id=${item.id})}" method="post">
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
             </div>
         </div>
     </div>

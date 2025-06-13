@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 public class ApplicationReadyEventListener {
-    private static final String ADMIN_EMAIL = "admin@mail.ru";
+    private static final String ADMIN_EMAIL = "owner@mail.ru";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -27,7 +27,7 @@ public class ApplicationReadyEventListener {
             User user = new User()
                     .setEmail(ADMIN_EMAIL)
                     .setHashPassword(passwordEncoder.encode("1"))
-                    .setRole(UserRole.ADMIN)
+                    .setRole(UserRole.OWNER)
                     .setStatus(UserStatus.ACTIVE);
             userRepository.save(user);
         }
