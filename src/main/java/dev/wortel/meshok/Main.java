@@ -3,8 +3,6 @@ package dev.wortel.meshok;
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
 import lombok.extern.slf4j.Slf4j;
-//import org.example.lib.service.UpdateService;
-import dev.wortel.meshok.util.MeshokAPI;
 
 @Slf4j
 public class Main {

@@ -4,7 +4,6 @@ import dev.wortel.meshok.dto.ItemCreateDto;
 import dev.wortel.meshok.dto.ItemDisplayDto;
 import dev.wortel.meshok.dto.ItemDto;
 import dev.wortel.meshok.entity.Item;
-import dev.wortel.meshok.entity.ItemStatus;
 import dev.wortel.meshok.helper.PictureHelper;
 import dev.wortel.meshok.service.MeshokService;
 import org.mapstruct.*;

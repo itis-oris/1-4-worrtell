@@ -1,7 +1,6 @@
 package dev.wortel.meshok.repository;
 
 import dev.wortel.meshok.entity.Cart;
-import dev.wortel.meshok.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
