@@ -1,6 +1,6 @@
 package dev.wortel.meshok.task;
 
-import dev.wortel.meshok.entity.Item;
+import entity.Item;
 import lombok.RequiredArgsConstructor;
 import dev.wortel.meshok.mapper.ItemMapper;
 import dev.wortel.meshok.service.ItemService;

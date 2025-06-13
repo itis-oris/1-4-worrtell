@@ -2,7 +2,7 @@ package dev.wortel.meshok.controller;
 
 import dev.wortel.meshok.dto.ItemCreateDto;
 import dev.wortel.meshok.dto.ItemDisplayDto;
-import dev.wortel.meshok.entity.Item;
+import entity.Item;
 import dev.wortel.meshok.helper.PictureHelper;
 import dev.wortel.meshok.mapper.ItemMapper;
 import dev.wortel.meshok.service.ItemService;

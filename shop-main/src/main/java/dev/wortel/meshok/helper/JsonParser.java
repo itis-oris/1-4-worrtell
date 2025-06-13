@@ -2,7 +2,6 @@ package dev.wortel.meshok.helper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import dev.wortel.meshok.dto.*;
-import dev.wortel.meshok.entity.Item;
 import dev.wortel.meshok.exception.ApiException;
 import dev.wortel.meshok.util.JsonUtil;
 import lombok.Data;

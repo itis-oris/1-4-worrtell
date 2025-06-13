@@ -11,7 +11,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
-@EntityScan("dev.wortel.meshok.entity")
+@EntityScan({"dev.wortel.meshok.entity", "entity"})
 @EnableJpaRepositories("dev.wortel.meshok.repository")
 @EnableScheduling
 @EnableRetry

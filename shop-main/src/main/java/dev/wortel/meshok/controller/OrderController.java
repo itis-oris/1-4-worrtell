@@ -2,7 +2,7 @@ package dev.wortel.meshok.controller;
 
 import dev.wortel.meshok.dto.ItemDisplayDto;
 import dev.wortel.meshok.dto.OrderDto;
-import dev.wortel.meshok.entity.Item;
+import entity.Item;
 import dev.wortel.meshok.entity.Order;
 import dev.wortel.meshok.entity.PaymentMethod;
 import dev.wortel.meshok.helper.PictureHelper;

@@ -1,6 +1,6 @@
 package dev.wortel.meshok.security.details;
 
-import dev.wortel.meshok.entity.User;
+import entity.User;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

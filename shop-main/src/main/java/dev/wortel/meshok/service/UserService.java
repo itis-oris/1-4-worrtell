@@ -1,6 +1,6 @@
 package dev.wortel.meshok.service;
 
-import dev.wortel.meshok.entity.User;
+import entity.User;
 import dev.wortel.meshok.exception.ResourceNotFoundException;
 import dev.wortel.meshok.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
