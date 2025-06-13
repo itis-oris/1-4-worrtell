@@ -3,6 +3,8 @@ package dev.wortel.meshok.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import static jakarta.persistence.EnumType.ORDINAL;
+
 @Data
 @Entity
 public class Item {
@@ -37,4 +39,8 @@ public class Item {
     @Column(length = 2000)
     private String description;
     private String format;
+    @Enumerated(ORDINAL)
+    private ItemStatus itemStatus;
+    @Enumerated(ORDINAL)
+    private Source source;
 }

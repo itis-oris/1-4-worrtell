@@ -1,6 +1,7 @@
 package dev.wortel.meshok.repository;
 
 import dev.wortel.meshok.entity.Item;
+import dev.wortel.meshok.entity.ItemStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,15 +17,33 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("SELECT p.id FROM Item p WHERE p.id IN :ids")
     List<Long> findExistingIds(@Param("ids") List<Long> ids);
 
-    Page<Item> findAll(Pageable pageable);
+//    List<Item> findAllByIdIn(List<Long> ids);
+//
+//    Page<Item> findAll(Pageable pageable);
+//
+//    Page<Item> findAllByItemStatus(ItemStatus itemStatus, Pageable pageable);
+//
+//    Page<Item> findByCategory(String category, Pageable pageable);
+//
+//    Page<Item> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+//            String name,
+//            String description,
+//            Pageable pageable
+//    );
+//
+//    Optional<Item> findByMeshokId(Long meshokId);
 
-    Page<Item> findByCategory(String category, Pageable pageable);
+    List<Item> findAllByIdInAndItemStatus(List<Long> ids, ItemStatus itemStatus);
 
-    Page<Item> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-            String name,
-            String description,
+    Page<Item> findAllByItemStatus(ItemStatus itemStatus, Pageable pageable);
+
+    Page<Item> findByItemStatusAndCategory(ItemStatus itemStatus, String category, Pageable pageable);
+
+    Page<Item> findByItemStatusAndNameContainingIgnoreCaseOrItemStatusAndDescriptionContainingIgnoreCase(
+            ItemStatus itemStatus1, String name,
+            ItemStatus itemStatus2, String description,
             Pageable pageable
     );
 
-    Optional<Item> findByMeshokId(Long meshokId);
+    Optional<Item> findByMeshokIdAndItemStatus(Long meshokId, ItemStatus itemStatus);
 }

@@ -1,6 +1,7 @@
 package dev.wortel.meshok.service;
 
 import dev.wortel.meshok.entity.Item;
+import dev.wortel.meshok.entity.ItemStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import dev.wortel.meshok.helper.PictureHelper;
@@ -16,6 +17,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import static dev.wortel.meshok.entity.ItemStatus.ACTIVE;
 
 @Slf4j
 @Service
@@ -26,8 +29,13 @@ public class ItemService {
     private final PictureHelper pictureHelper;
     private final YandexS3Service s3Service;
 
+    public List<Item> getItemsByIds(List<Long> ids) {
+        return itemRepository.findAllByIdInAndItemStatus(ids, ACTIVE);
+    }
+
     public Page<Item> getAllItems(int page, int size) {
-        return itemRepository.findAll(PageRequest.of(page, size));
+        //return itemRepository.findAll(PageRequest.of(page, size));
+        return itemRepository.findAllByItemStatus(ACTIVE, PageRequest.of(page, size));
     }
 
     public Item getItemById(Long id) {
@@ -36,7 +44,7 @@ public class ItemService {
     }
 
     public Item getItemByMeshokId(Long id) {
-        return itemRepository.findByMeshokId(id)
+        return itemRepository.findByMeshokIdAndItemStatus(id, ACTIVE)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
     }
 
@@ -45,11 +53,13 @@ public class ItemService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
 
         if (searchTerm.isEmpty()) {
-            return itemRepository.findAll(pageable);
+            return itemRepository.findAllByItemStatus(ACTIVE, pageable);
         }
 
-        return itemRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+        return itemRepository.findByItemStatusAndNameContainingIgnoreCaseOrItemStatusAndDescriptionContainingIgnoreCase(
+                ACTIVE,
                 searchTerm,
+                ACTIVE,
                 searchTerm,
                 pageable
         );
@@ -114,5 +124,14 @@ public class ItemService {
             savedItem = itemRepository.save(savedItem);
         }
         return savedItem;
+    }
+
+    public void deleteItem(Long id) {
+        Optional<Item> item = itemRepository.findById(id);
+        if (item.isPresent()) {
+            Item itemToDelete = item.get();
+            itemToDelete.setItemStatus(ItemStatus.DELETED);
+            itemRepository.save(itemToDelete);
+        }
     }
 }
