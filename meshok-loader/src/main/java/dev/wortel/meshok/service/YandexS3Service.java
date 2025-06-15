@@ -1,12 +1,11 @@
 package dev.wortel.meshok.service;
 
-import dev.wortel.meshok.helper.PictureHelper;
+import dev.wortel.meshok.helper.PathHelper;
 import entity.Item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -23,15 +22,15 @@ public class YandexS3Service {
     private final S3Client s3Client;
     @Value("${yandex.s3.bucket}")
     private String bucketName;
-    private final PictureHelper pictureHelper;
+    private final PathHelper pathHelper;
 
     public String fetchAndUploadToS3(Item item, int n){
         try {
-            String imageUrl = pictureHelper.path(item, n);
+            String imageUrl = pathHelper.path(item, n);
             log.info("Fetching image from {}", imageUrl);
             URL url = new URL(imageUrl);
 
-            String filename = pictureHelper.filename(item, n);
+            String filename = pathHelper.filename(item, n);
             log.info("Uploading image to {}", filename);
 
             try (InputStream in = url.openStream()) {

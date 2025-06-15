@@ -2,7 +2,7 @@ package dev.wortel.meshok.mapper;
 
 import dev.wortel.meshok.dto.ItemDto;
 import entity.Item;
-import dev.wortel.meshok.helper.PictureHelper;
+import dev.wortel.meshok.helper.PathHelper;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,8 +15,8 @@ public interface ItemMapper {
     @Mapping(target = "meshokId", source = "id")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "category", expression = "java(meshokService.getFullCategoryName(dto.getCategory()))")
-    @Mapping(target = "picturesFolderPath", expression = "java(pictureHelper.folder(dto.getId()))")
+    @Mapping(target = "picturesFolderPath", expression = "java(pathHelper.folder(dto.getId()))")
     @Mapping(target = "itemStatus", constant = "ACTIVE")
     @Mapping(target = "source", constant = "MESHOK")
-    Item toEntity(ItemDto dto, @Context MeshokService meshokService, @Context PictureHelper pictureHelper);
+    Item toEntity(ItemDto dto, @Context MeshokService meshokService, @Context PathHelper pathHelper);
 }

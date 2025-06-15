@@ -21,6 +21,10 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 50MB
+  task:
+    scheduling:
+      pool:
+        size: 5
 
 server:
   port: 8080
@@ -42,3 +46,15 @@ yandex:
 meshok:
   access-token: f3cfb2cb5903df0f48231453f1877108
   base-url: https://meshok.net/i/
+
+system:
+  api:
+    key:
+      migration:
+        service: "migration-service"
+      validity:
+        days: 30
+
+migrator:
+  api:
+    url: "http://localhost:8081"
