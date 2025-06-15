@@ -6,6 +6,7 @@ import dev.wortel.meshok.service.MeshokService;
 import dev.wortel.meshok.util.MeshokAPI;
 import entity.Item;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -27,10 +28,20 @@ public class SaveTask {
 //        itemService.saveWithPictures(item);
 //    }
 
+//    public void saveAllPrimary() {
+//        List<Item> items = meshokService.getNewItems();
+////        items.forEach(itemService::saveWithPictures);
+//        System.out.println(items);
+//        itemService.saveWithPictures(items);
+//    }
+
+    @Scheduled(cron = "${load.cron.schedule}")
+    public void saveAll() {
+        saveAllPrimary();
+    }
+
     public void saveAllPrimary() {
         List<Item> items = meshokService.getNewItems();
-//        items.forEach(itemService::saveWithPictures);
-        System.out.println(items);
         itemService.saveWithPictures(items);
     }
 }

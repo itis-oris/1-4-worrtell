@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Управление миграцией</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Управление миграцией данных</h1>
+
+        <div th:if="${successMessage}" class="alert alert-success">
+            <p th:text="${successMessage}"></p>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <p th:text="${errorMessage}"></p>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Статус миграции</h3>
+            </div>
+            <div class="card-body">
+                <p>
+                    <strong>Статус</strong>
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Действия</h3>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/admin/migration/start}" method="post">
+                    <button type="submit" class="btn btn-primary">
+                        Запустить миграцию
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3>Расписание миграций</h3>
+            </div>
+            <div class="card-body">
+                <p>Автоматическая миграция запускается каждый день в 02:00.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

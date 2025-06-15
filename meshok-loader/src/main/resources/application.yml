@@ -33,7 +33,13 @@ yandex:
     bucket: meshok
     endpoint: https://storage.yandexcloud.net
     region: ru-central1
+  disk:
+    public-url: https://disk.yandex.ru/client/disk/meshok
 
 meshok:
   access-token: f3cfb2cb5903df0f48231453f1877108
   base-url: https://meshok.net/i/
+
+load:
+  cron:
+    schedule: 0 30 12 * * ?

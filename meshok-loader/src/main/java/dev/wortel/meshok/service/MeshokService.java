@@ -3,7 +3,7 @@ import dev.wortel.meshok.dto.CategoryDto;
 import dev.wortel.meshok.dto.LotDto;
 import entity.Item;
 import dev.wortel.meshok.helper.JsonParser;
-import dev.wortel.meshok.helper.PictureHelper;
+import dev.wortel.meshok.helper.PathHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import dev.wortel.meshok.mapper.ItemMapper;
@@ -19,7 +19,7 @@ public class MeshokService {
     private final MeshokAPI meshokAPI;
     private final JsonParser jsonParser;
     private final ItemMapper itemMapper;
-    private final PictureHelper pictureHelper;
+    private final PathHelper pathHelper;
     private final ItemService itemService;
 
     private CategoryDto getCategory(Long id) {
@@ -43,7 +43,7 @@ public class MeshokService {
 
     private List<Item> getItems(List<Long> idList) {
         List<Item> items = new LinkedList<>();
-        idList.forEach(id -> items.add(itemMapper.toEntity(jsonParser.toItem(meshokAPI.getItemInfo(id.toString())), this, pictureHelper)));
+        idList.forEach(id -> items.add(itemMapper.toEntity(jsonParser.toItem(meshokAPI.getItemInfo(id.toString())), this, pathHelper)));
         return items;
     }
 

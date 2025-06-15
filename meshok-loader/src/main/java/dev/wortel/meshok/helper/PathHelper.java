@@ -3,15 +3,11 @@ package dev.wortel.meshok.helper;
 import entity.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-@Service
-public class PictureHelper {
+@Component
+public class PathHelper {
     @Value("${yandex.disk.public-url}")
     private String PUBLIC_URL;
     @Value("${meshok.base-url}")
