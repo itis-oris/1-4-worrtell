@@ -6,17 +6,24 @@ import entity.Item;
 import dev.wortel.meshok.helper.PictureHelper;
 import dev.wortel.meshok.mapper.ItemMapper;
 import dev.wortel.meshok.service.ItemService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -29,33 +36,54 @@ public class ItemController {
     private final PictureHelper pictureHelper;
 
     @GetMapping
-    public String getAllItems(
+    public Object getAllItems(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(required = false, defaultValue = "false") boolean isAjax,
-            Model model) {
-        Page<Item> itemPage = itemService.getAllItems(page, size);
-        List<ItemDisplayDto> displayDtos = itemPage.getContent().stream()
-                .map(item -> itemMapper.toItemDisplayDto(item, pictureHelper))
-                .toList();
+            Model model,
+            HttpServletRequest request) {
+        log.info("Get all items");
 
-        model.addAttribute("items", displayDtos);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("hasNextPage", itemPage.hasNext());
+        try {
+            Page<Item> itemPage = itemService.getAllItems(page, size);
+            List<ItemDisplayDto> displayDtos = itemPage.getContent().stream()
+                    .map(item -> itemMapper.toItemDisplayDto(item, pictureHelper))
+                    .toList();
 
-        if (isAjax) {
-            return "items/fragments/item-list :: itemList";
+            if (isAjax || isJsonRequest(request)) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("items", displayDtos);
+                response.put("hasNextPage", itemPage.hasNext());
+                return ResponseEntity.ok(response);
+            }
+
+            model.addAttribute("items", displayDtos);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("hasNextPage", itemPage.hasNext());
+            return "items/list";
+
+        } catch (Exception e) {
+            return handleException(e, request);
         }
-
-        return "items/list";
     }
 
     @GetMapping("/{id}")
-    public String getItemById(@PathVariable Long id, Model model) {
-        Item item = itemService.getItemById(id);
-        ItemDisplayDto dto = itemMapper.toItemDisplayDto(item, pictureHelper);
-        model.addAttribute("item", dto);
-        return "items/details";
+    public Object getItemById(@PathVariable Long id, Model model, HttpServletRequest request) {
+        log.info("Get item by ID {}", id);
+        try {
+            Item item = itemService.getItemById(id);
+            ItemDisplayDto dto = itemMapper.toItemDisplayDto(item, pictureHelper);
+
+            if (isJsonRequest(request)) {
+                return ResponseEntity.ok(dto);
+            }
+
+            model.addAttribute("item", dto);
+            return "items/details";
+
+        } catch (Exception e) {
+            return handleException(e, request);
+        }
     }
 
     @GetMapping("/search")
@@ -117,18 +145,23 @@ public class ItemController {
             return "redirect:/items/" + id;
         }
     }
-//    @GetMapping("/profile")
-//    public String showProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        User user = userDetails.getUser();
-//        // ...
-//    }
-//
-//    @GetMapping("/cart")
-//    public String showCart(Principal principal, Model model) {
-//        // Здесь должна быть логика получения корзины пользователя
-//        // Например:
-//        // Cart cart = cartService.getUserCart(principal.getName());
-//        // model.addAttribute("cart", cart);
-//        return "cart/view";
-//    }
+
+    private boolean isJsonRequest(HttpServletRequest request) {
+        String acceptHeader = request.getHeader("Accept");
+        return acceptHeader != null && acceptHeader.contains("application/json");
+    }
+
+    private Object handleException(Exception e, HttpServletRequest request) {
+        log.error("Error processing request", e);
+
+        if (isJsonRequest(request)) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            errorResponse.put("status", "error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(errorResponse);
+        }
+
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+    }
 }

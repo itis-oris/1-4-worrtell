@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Все товары</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         .loading-spinner {
             width: 3rem;
@@ -95,8 +97,6 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
     $(document).ready(function() {
         let currentPage = /*[[${currentPage}]]*/ 0;
@@ -110,43 +110,72 @@
             const nextPage = currentPage + 1;
 
             $('#loading-spinner').show();
+            $('#error-message').hide();
 
             $.ajax({
                 url: /*[[@{/items}]]*/ '/items',
                 data: {
                     page: nextPage,
-                    size: 12,
-                    isAjax: true
+                    size: 12
                 },
-                success: function(data) {
-                    setTimeout(function() {
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(data, 'text/html');
-                        const newItems = $(doc).find('.item-card');
-
-                        newItems.addClass('fade-in');
-
-                        $('#item-list').append(newItems);
-
+                headers: {
+                    'Accept': 'application/json'
+                },
+                success: function(response) {
+                    if (response.items && response.items.length > 0) {
+                        renderItems(response.items);
                         currentPage = nextPage;
-
-                        const hasMoreData = $(doc).find('[data-has-next="true"]').length > 0;
-                        hasNextPage = hasMoreData;
-
-                        $('#loading-spinner').hide();
-
-                        if (!hasNextPage) {
-                            $('#no-more-items').show();
-                        }
-                        loading = false;
-                    }, 500);
+                        hasNextPage = response.hasNextPage;
+                    } else {
+                        hasNextPage = false;
+                        $('#no-more-items').show();
+                    }
                 },
-                error: function() {
+                error: function(xhr) {
+                    let errorMsg = 'Ошибка загрузки';
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMsg = xhr.responseJSON.error;
+                    }
+                    $('#error-message').html('<i class="bi bi-exclamation-triangle"></i> ' + errorMsg +
+                        ' <a href="#" id="retry-button">Повторить</a>').show();
+                },
+                complete: function() {
                     $('#loading-spinner').hide();
-                    $('#error-message').show();
                     loading = false;
                 }
             });
+        }
+
+        function renderItems(items) {
+            let itemsHtml = '';
+
+            items.forEach(function(item) {
+                itemsHtml += `
+                    <div class="col item-card fade-in">
+                        <div class="card h-100 shadow-sm">
+                            <img src="${item.pictures && item.pictures.length > 0 ? item.pictures[0] : '/images/no-image.jpg'}"
+                                 class="card-img-top" alt="Изображение товара"
+                                 style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">${item.name}</h5>
+                                <p class="card-text">
+                                    <small class="text-muted">${item.category || ''}</small>
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="h5 text-primary">${item.price} ₽</span>
+                                    <a href="/items/${item.id}" class="btn btn-sm btn-outline-primary">Подробнее</a>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <small class="text-muted">
+                                    <i class="bi bi-clock"></i> ${item.listDateTime || ''}
+                                </small>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+
+            $('#item-list').append(itemsHtml);
         }
 
         $('#retry-button').click(function(e) {
@@ -155,8 +184,8 @@
             loadMoreItems();
         });
 
-        $(window).scroll(function() {
-            if($(window).scrollTop() + $(window).height() > $(document).height() - 300) {
+        $(window).on('scroll', function() {
+            if ($(window).scrollTop() + $(window).height() >= $(document).height() - 300) {
                 loadMoreItems();
             }
         });
