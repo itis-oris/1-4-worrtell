@@ -29,7 +29,6 @@ public class MigrationService {
     }
 
     public Map<String, Object> triggerMigration() {
-        migratorApiUrl = "http://localhost:8082";
         String apiKey = systemApiKeyService.getMigrationServiceApiKey();
 
         log.info("url {}, key {}", migratorApiUrl, apiKey);
