@@ -1,7 +1,6 @@
 package dev.wortel.meshok.security;
 
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        // Получаем API ключ из заголовка
         String apiKey = request.getHeader(API_KEY_HEADER);
 
         if (!StringUtils.hasText(apiKey)) {

@@ -35,10 +35,6 @@ public class PictureHelper {
     }
 
     public String getFileExtension(String filename) {
-//        if (filename == null) return "jpg";
-//        int lastDotIndex = filename.lastIndexOf('.');
-//        if (lastDotIndex == -1) return "jpg";
-//        return filename.substring(lastDotIndex + 1);
         return "jpg";
     }
 }
