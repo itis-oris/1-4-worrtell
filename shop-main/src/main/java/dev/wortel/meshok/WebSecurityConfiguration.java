@@ -14,6 +14,7 @@ public class WebSecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         HttpSecurity httpSecurity = http.authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/", "/error").permitAll()
                         .requestMatchers("/registration", "/login").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
@@ -26,13 +27,14 @@ public class WebSecurityConfiguration {
                         .failureUrl("/login?error=true")
                         .permitAll())
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login")
-                        .permitAll()
-                );
+                        .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .clearAuthentication(true)
+                        .permitAll())
+                ;
 //                .oneTimeTokenLogin(Customizer.withDefaults())
-//                .rememberMe(Customizer.withDefaults())
 //                .oauth2Login(Customizer.withDefaults());
-
         return httpSecurity.build();
     }
 }

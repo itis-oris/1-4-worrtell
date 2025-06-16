@@ -44,14 +44,8 @@ public class ItemService {
 
     private void savePictures(Item item) {
         int n = Integer.parseInt(item.getNumberOfPictures());
-//        String id = String.valueOf(item.getMeshokId());
 
         for (int i = 0; i < n; i++) {
-//            String url = diskService.uploadFile(
-//                    pictureHelper.path(id, i),
-//                    pictureHelper.newFolder(id),
-//                    pictureHelper.name(i)
-//            );
             s3Service.fetchAndUploadToS3(item, i);
         }
     }

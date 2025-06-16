@@ -41,10 +41,9 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/migrate/**").hasRole("ADMIN")
+                        .requestMatchers("/api/migrate/**").hasRole("OWNER")
                         .anyRequest().authenticated()
                 );
-
         return http.build();
     }
 }

@@ -16,11 +16,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class MigrationController {
-    //private final MigrationService migrationService;
     private final SaveTask saveTask;
 
     @PostMapping("/start")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Map<String, Object>> startMigration() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String initiatedBy = auth.getName();
@@ -29,25 +28,6 @@ public class MigrationController {
 
         saveTask.saveAllPrimary();
 
-//        try {
-//            Map<String, Object> result = migrationService.runMigration(initiatedBy);
-//            return ResponseEntity.ok(result);
-//        } catch (Exception e) {
-//            log.error("Migration failed", e);
-//
-//            Map<String, Object> errorResponse = new HashMap<>();
-//            errorResponse.put("success", false);
-//            errorResponse.put("timestamp", LocalDateTime.now());
-//            errorResponse.put("error", e.getMessage());
-//
-//            return ResponseEntity.internalServerError().body(errorResponse);
-//        }
         return ResponseEntity.ok(new HashMap<>());
     }
-
-//    @GetMapping("/status")
-//    @PreAuthorize("hasRole('ADMIN')")
-//    public ResponseEntity<Map<String, Object>> getMigrationStatus() {
-//        return ResponseEntity.ok(migrationService.getStatus());
-//    }
 }

@@ -12,11 +12,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/admin/migration")
-@PreAuthorize("hasRole('ADMIN')")
+@RequestMapping("/owner/migration")
+@PreAuthorize("hasRole('OWNER')")
 @Slf4j
 @RequiredArgsConstructor
-public class AdminMigrationController {
+public class OwnerMigrationController {
 
     private final MigrationService migrationService;
 
@@ -37,12 +37,12 @@ public class AdminMigrationController {
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Произошла ошибка при запуске миграции: " + e.getMessage());
         }
-        return "redirect:/admin/migration";
+        return "redirect:/owner/migration";
     }
 
     @GetMapping
     public String start(Model model) {
         model.addAttribute("migrationStatus", "running");
-        return "admin/migration";
+        return "owner/migration";
     }
 }

@@ -31,14 +31,10 @@ public class CartController {
         if (principal == null) {
             return "redirect:/login";
         }
-
-        // Получаем ID пользователя из Principal
         Long userId = getUserId(principal);
 
-        // Получаем товары в корзине
         List<Item> cartItems = cartService.getCartItems(userId);
 
-        // Конвертируем в DTO для отображения
         List<ItemDisplayDto> displayDtos = cartItems.stream()
                 .map(item -> itemMapper.toItemDisplayDto(item, pictureHelper))
                 .toList();
