@@ -1,5 +1,8 @@
 package dev.wortel.meshok.service;
 
+import dev.wortel.meshok.error.BusinessException;
+import dev.wortel.meshok.error.ResourceNotFoundException;
+import dev.wortel.meshok.error.ValidationException;
 import entity.Item;
 import entity.ItemStatus;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
@@ -22,76 +26,170 @@ import static entity.ItemStatus.ACTIVE;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ItemService {
     private final ItemRepository itemRepository;
     private final YandexS3Service s3Service;
 
     public void changeStatus(Item item, ItemStatus status) {
-        item.setItemStatus(status);
-        itemRepository.save(item);
+        validateItemOperation(item, status);
+
+        try {
+            item.setItemStatus(status);
+            itemRepository.save(item);
+        } catch (Exception e) {
+            log.error("Failed to change item status", e);
+            throw new BusinessException("Failed to update item status");
+        }
     }
 
     public void changeStatus(List<Item> items, ItemStatus status) {
-        items.forEach(item -> {changeStatus(item, status);});
-    }
-
-    public List<Item> getItemsByIds(List<Long> ids) {
-        return itemRepository.findAllByIdInAndItemStatus(ids, ACTIVE);
-    }
-
-    public Page<Item> getAllItems(int page, int size) {
-        //return itemRepository.findAll(PageRequest.of(page, size));
-        return itemRepository.findAllByItemStatus(ACTIVE, PageRequest.of(page, size));
-    }
-
-    public Item getItemById(Long id) {
-        return itemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Item not found"));
-    }
-
-    public Page<Item> searchItems(String query, int page, int size) {
-        String searchTerm = query.trim();
-        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
-
-        if (searchTerm.isEmpty()) {
-            return itemRepository.findAllByItemStatus(ACTIVE, pageable);
+        if (items == null) {
+            throw new ValidationException("Items list cannot be null");
         }
 
-        return itemRepository.findByItemStatusAndNameContainingIgnoreCaseOrItemStatusAndDescriptionContainingIgnoreCase(
-                ACTIVE,
-                searchTerm,
-                ACTIVE,
-                searchTerm,
-                pageable
-        );
+        items.forEach(item -> changeStatus(item, status));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Item> getItemsByIds(List<Long> ids) {
+        if (ids == null) {
+            throw new ValidationException("Item IDs cannot be null");
+        }
+
+        try {
+            return itemRepository.findAllByIdInAndItemStatus(ids, ACTIVE);
+        } catch (Exception e) {
+            log.error("Failed to get items by IDs", e);
+            throw new BusinessException("Failed to retrieve items");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Item> getAllItems(int page, int size) {
+        validatePagination(page, size);
+
+        try {
+            return itemRepository.findAllByItemStatus(ACTIVE, PageRequest.of(page, size));
+        } catch (Exception e) {
+            log.error("Failed to get items", e);
+            throw new BusinessException("Failed to retrieve items");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Item getItemById(Long id) {
+        if (id == null) {
+            throw new ValidationException("Item ID is required");
+        }
+
+        return itemRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Item> searchItems(String query, int page, int size) {
+        validatePagination(page, size);
+
+        try {
+            String searchTerm = query != null ? query.trim() : "";
+            Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+
+            if (searchTerm.isEmpty()) {
+                return itemRepository.findAllByItemStatus(ACTIVE, pageable);
+            }
+
+            return itemRepository.findByItemStatusAndNameContainingIgnoreCaseOrItemStatusAndDescriptionContainingIgnoreCase(
+                    ACTIVE, searchTerm, ACTIVE, searchTerm, pageable);
+
+        } catch (Exception e) {
+            log.error("Failed to search items", e);
+            throw new BusinessException("Failed to search items");
+        }
     }
 
     public Item createItem(Item item, MultipartFile[] images) {
-        Item savedItem = itemRepository.save(item);
+        validateItemForCreation(item);
 
-        if (images != null && images.length > 0) {
-            List<String> imageUrls = new ArrayList<>();
+        try {
+            Item savedItem = itemRepository.save(item);
 
-            for (int i = 0; i < images.length; i++) {
-                MultipartFile image = images[i];
-                if (!image.isEmpty()) {
-                    String imageUrl = s3Service.uploadToS3(image, savedItem, i);
-                    imageUrls.add(imageUrl);
-                }
+            if (images != null && images.length > 0) {
+                processItemImages(savedItem, images);
             }
-            log.info("Images {}", imageUrls);
-            savedItem.setNumberOfPictures(String.valueOf(imageUrls.size()));
-            savedItem = itemRepository.save(savedItem);
+
+            return savedItem;
+
+        } catch (Exception e) {
+            log.error("Failed to create item", e);
+            throw new BusinessException("Failed to create item");
         }
-        return savedItem;
     }
 
     public void deleteItem(Long id) {
-        Optional<Item> item = itemRepository.findById(id);
-        if (item.isPresent()) {
-            Item itemToDelete = item.get();
-            itemToDelete.setItemStatus(ItemStatus.DELETED);
-            itemRepository.save(itemToDelete);
+        if (id == null) {
+            throw new ValidationException("Item ID is required");
+        }
+
+        try {
+            Item item = getItemById(id);
+            item.setItemStatus(ItemStatus.DELETED);
+            itemRepository.save(item);
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Failed to delete item", e);
+            throw new BusinessException("Failed to delete item");
+        }
+    }
+
+    private void processItemImages(Item item, MultipartFile[] images) {
+        List<String> imageUrls = new ArrayList<>();
+
+        for (int i = 0; i < images.length; i++) {
+            MultipartFile image = images[i];
+            if (image != null && !image.isEmpty()) {
+                try {
+                    String imageUrl = s3Service.uploadToS3(image, item, i);
+                    imageUrls.add(imageUrl);
+                } catch (Exception e) {
+                    log.error("Failed to upload image for item {}", item.getId(), e);
+                    throw new BusinessException("Failed to upload item images");
+                }
+            }
+        }
+
+        item.setNumberOfPictures(String.valueOf(imageUrls.size()));
+        itemRepository.save(item);
+    }
+
+    private void validateItemForCreation(Item item) {
+        if (item == null) {
+            throw new ValidationException("Item cannot be null");
+        }
+        if (item.getName() == null || item.getName().isBlank()) {
+            throw new ValidationException("Item name is required");
+        }
+        if (item.getPrice() == null || item.getPrice().isBlank()) {
+            throw new ValidationException("Item price is required");
+        }
+    }
+
+    private void validateItemOperation(Item item, ItemStatus status) {
+        if (item == null) {
+            throw new ValidationException("Item cannot be null");
+        }
+        if (status == null) {
+            throw new ValidationException("Status cannot be null");
+        }
+    }
+
+    private void validatePagination(int page, int size) {
+        if (page < 0) {
+            throw new ValidationException("Page number cannot be negative");
+        }
+        if (size <= 0) {
+            throw new ValidationException("Page size must be positive");
         }
     }
 }

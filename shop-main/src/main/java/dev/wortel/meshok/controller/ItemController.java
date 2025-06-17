@@ -102,12 +102,14 @@ public class ItemController {
         return "items/list";
     }
 
+    @PreAuthorize("hasAnyRole('OWNER','ADMIN')")
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("item", new ItemCreateDto());
         return "items/create";
     }
 
+    @PreAuthorize("hasAnyRole('OWNER','ADMIN')")
     @PostMapping("/create")
     public String createItem(@ModelAttribute("item") @Valid ItemCreateDto itemDto,
                              BindingResult result,

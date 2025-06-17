@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bad Request</title>
+</head>
+<body>
+<h1>Invalid Request</h1>
+<p th:text="${errorMessage} ?: 'Your request contains invalid data'"></p>
+<a href="/">Go to Home Page</a>
+</body>
+</html>
