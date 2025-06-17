@@ -28,14 +28,6 @@ public class SecurityConfig {
                 )
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .exceptionHandling(exceptions ->
-                        exceptions
-                                .authenticationEntryPoint((request, response, authException) -> {
-                                    response.setStatus(401);
-                                    response.setContentType("application/json");
-                                    response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"API key required\"}");
-                                })
-                )
                 .addFilterBefore(
                         new ApiKeyAuthFilter(apiKeyService),
                         UsernamePasswordAuthenticationFilter.class
