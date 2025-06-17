@@ -2,6 +2,8 @@ package dev.wortel.meshok.mapper;
 
 import dev.wortel.meshok.dto.ItemCreateDto;
 import dev.wortel.meshok.dto.ItemDisplayDto;
+import dev.wortel.meshok.dto.ItemResponse;
+import dev.wortel.meshok.dto.ItemUpdateDto;
 import entity.Item;
 import dev.wortel.meshok.helper.PictureHelper;
 import org.mapstruct.*;
@@ -19,4 +21,10 @@ public interface ItemMapper {
     @Mapping(target = "itemStatus", constant = "ACTIVE")
     @Mapping(target = "source", constant = "APPLICATION")
     Item toEntity(ItemCreateDto dto);
+
+    ItemResponse toItemResponse(Item item);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    void updateFromDto(ItemUpdateDto dto, @MappingTarget Item entity);
 }

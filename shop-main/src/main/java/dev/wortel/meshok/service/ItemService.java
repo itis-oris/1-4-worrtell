@@ -1,10 +1,14 @@
 package dev.wortel.meshok.service;
 
+import dev.wortel.meshok.dto.ItemResponse;
+import dev.wortel.meshok.dto.ItemUpdateDto;
 import dev.wortel.meshok.error.BusinessException;
 import dev.wortel.meshok.error.ResourceNotFoundException;
 import dev.wortel.meshok.error.ValidationException;
+import dev.wortel.meshok.mapper.ItemMapper;
 import entity.Item;
 import entity.ItemStatus;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import dev.wortel.meshok.repository.ItemRepository;
@@ -12,15 +16,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 import static entity.ItemStatus.ACTIVE;
 
 @Slf4j
@@ -30,6 +32,7 @@ import static entity.ItemStatus.ACTIVE;
 public class ItemService {
     private final ItemRepository itemRepository;
     private final YandexS3Service s3Service;
+    private final ItemMapper itemMapper;
 
     public void changeStatus(Item item, ItemStatus status) {
         validateItemOperation(item, status);
@@ -191,5 +194,31 @@ public class ItemService {
         if (size <= 0) {
             throw new ValidationException("Page size must be positive");
         }
+    }
+
+    public List<ItemResponse> findAll() {
+        return itemRepository.findAll().stream()
+                .map(itemMapper::toItemResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<ItemResponse> toItemResponse(List<Item> items) {
+        return items.stream()
+                .map(itemMapper::toItemResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public ItemResponse updateItem(Long id,
+                                   ItemUpdateDto request) {
+        Item existingItem = itemRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Item not found with id: " + id));
+
+        itemMapper.updateFromDto(request, existingItem);
+
+        Item updatedItem = itemRepository.save(existingItem);
+        log.info("Item updated: {}", updatedItem.getId());
+
+        return itemMapper.toItemResponse(updatedItem);
     }
 }
