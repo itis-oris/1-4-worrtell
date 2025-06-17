@@ -29,6 +29,8 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
 
         String apiKey = request.getHeader(API_KEY_HEADER);
 
+        log.info("api key {}", apiKey);
+
         if (!StringUtils.hasText(apiKey)) {
             log.warn("Missing API key for request to {}", path);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

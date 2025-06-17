@@ -27,16 +27,18 @@ public class ApiKeyService {
                 .filter(key -> !isExpired(key))
                 .map(key -> {
                     User user = key.getUser();
+                    log.info("user {} key {}", user, key);
 
-                    if (user.getRole() != UserRole.ADMIN || !user.isActive()) {
-                        log.warn("API key belongs to non-admin or inactive user: {}", user.getEmail());
+
+                    if (user.getRole() != UserRole.OWNER || !user.isActive()) {
+                        log.info("API key belongs to non-admin or inactive user: {}", user.getEmail());
                         return null;
                     }
 
                     apiKeyRepository.save(key);
 
                     List<SimpleGrantedAuthority> authorities = Collections.singletonList(
-                            new SimpleGrantedAuthority("ROLE_ADMIN")
+                            new SimpleGrantedAuthority("ROLE_OWNER")
                     );
 
                     return new ApiKeyAuthentication(user.getEmail(), apiKeyValue, authorities);

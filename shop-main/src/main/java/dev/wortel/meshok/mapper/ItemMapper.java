@@ -25,6 +25,5 @@ public interface ItemMapper {
     ItemResponse toItemResponse(Item item);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
     void updateFromDto(ItemUpdateDto dto, @MappingTarget Item entity);
 }

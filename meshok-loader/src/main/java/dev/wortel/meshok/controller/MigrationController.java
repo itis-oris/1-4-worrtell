@@ -19,7 +19,7 @@ public class MigrationController {
     private final SaveTask saveTask;
 
     @PostMapping("/start")
-    @PreAuthorize("hasRole('OWNER')")
+    //@PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Map<String, Object>> startMigration() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String initiatedBy = auth.getName();

@@ -13,8 +13,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
+
 @Slf4j
+@Service
 public class MigrationService {
 
     private final SystemApiKeyService systemApiKeyService;
@@ -31,10 +32,8 @@ public class MigrationService {
     public Map<String, Object> triggerMigration() {
         String apiKey = systemApiKeyService.getMigrationServiceApiKey();
 
-        log.info("url {}, key {}", migratorApiUrl, apiKey);
-
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-API-Key", apiKey);
+        headers.set("X-Api-Key", apiKey);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
@@ -49,8 +48,13 @@ public class MigrationService {
             log.info("Migration triggered successfully: {}", response.getBody());
 
             @SuppressWarnings("unchecked")
-            Map<String, Object> result = response.getBody();
-            return result != null ? result : Collections.emptyMap();
+            Map<String, Object> result = response.getBody() != null
+                    ? response.getBody()
+                    : new HashMap<>();
+            result.putIfAbsent("success", true);
+            result.putIfAbsent("itemsProcessed", 0);
+
+            return result;
         } catch (Exception e) {
             log.error("Error triggering migration", e);
             Map<String, Object> errorResult = new HashMap<>();

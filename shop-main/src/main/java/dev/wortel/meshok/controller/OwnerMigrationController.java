@@ -18,7 +18,6 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 public class OwnerMigrationController {
-
     private final MigrationService migrationService;
 
     @PostMapping("/start")
@@ -30,26 +29,19 @@ public class OwnerMigrationController {
                 redirectAttributes.addFlashAttribute("successMessage",
                         "Миграция успешно запущена. Обрабатывается: " + result.get("itemsProcessed") + " элементов.");
             } else {
-                log.info("Не удалось запустить миграцию");
-                redirectAttributes.addFlashAttribute("errorMessage", "Не удалось запустить миграцию: " + result.get("error"));
-                throw new BusinessException("Не удалось запустить миграцию: " + result.get("error"));
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "Не удалось запустить миграцию: " + result.get("error"));
             }
         } catch (Exception e) {
-            log.info("Error triggering migration from admin panel", e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Произошла ошибка при запуске миграции: " + e.getMessage());
-            throw new BusinessException("Error triggering migration from admin panel");
+            log.error("Error triggering migration from admin panel", e);
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Произошла ошибка при запуске миграции: " + e.getMessage());
         }
         return "redirect:/owner/migration";
     }
 
     @GetMapping
     public String start(Model model) {
-        model.addAttribute("migrationStatus", "running");
-        return "owner/migration";
-    }
-
-    @PostMapping
-    public String migration(Model model) {
         model.addAttribute("migrationStatus", "running");
         return "owner/migration";
     }
