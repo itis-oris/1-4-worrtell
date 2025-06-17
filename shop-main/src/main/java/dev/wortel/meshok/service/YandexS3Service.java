@@ -1,5 +1,7 @@
 package dev.wortel.meshok.service;
 
+import dev.wortel.meshok.error.BusinessException;
+import dev.wortel.meshok.error.ValidationException;
 import entity.Item;
 import dev.wortel.meshok.helper.PictureHelper;
 import lombok.RequiredArgsConstructor;
@@ -20,14 +22,17 @@ import java.net.URL;
 @RequiredArgsConstructor
 public class YandexS3Service {
     private final S3Client s3Client;
-    @Value("${yandex.s3.bucket}")
-    private String bucketName;
     private final PictureHelper pictureHelper;
 
+    @Value("${yandex.s3.bucket}")
+    private String bucketName;
+
     public String uploadToS3(MultipartFile file, Item item, int index) {
+        validateUploadParameters(file, item);
+
         try {
-            String filename = generateFilename(item, index, pictureHelper.getFileExtension(file.getOriginalFilename()));
-            log.info("Uploading image to S3: {}", filename);
+            String filename = generateFilename(item, index,
+                    pictureHelper.getFileExtension(file.getOriginalFilename()));
 
             PutObjectRequest request = PutObjectRequest.builder()
                     .bucket(bucketName)
@@ -35,17 +40,30 @@ public class YandexS3Service {
                     .contentType(file.getContentType())
                     .build();
 
-            s3Client.putObject(request,
-                    RequestBody.fromBytes(file.getBytes()));
+            s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
 
-            return "https://storage.yandexcloud.net/" + bucketName + "/" + filename;
+            return buildFileUrl(filename);
+
         } catch (IOException e) {
             log.error("Error uploading file to S3", e);
-            throw new RuntimeException("Failed to upload file to S3", e);
+            throw new BusinessException("Failed to upload file to S3");
         }
     }
 
     private String generateFilename(Item item, int index, String extension) {
-        return "items." + item.getId() + "." + index + "." + extension;
+        return "items/" + item.getId() + "_" + index + "." + extension;
+    }
+
+    private String buildFileUrl(String filename) {
+        return "https://storage.yandexcloud.net/" + bucketName + "/" + filename;
+    }
+
+    private void validateUploadParameters(MultipartFile file, Item item) {
+        if (file == null || file.isEmpty()) {
+            throw new ValidationException("File cannot be empty");
+        }
+        if (item == null || item.getId() == null) {
+            throw new ValidationException("Item is not valid");
+        }
     }
 }

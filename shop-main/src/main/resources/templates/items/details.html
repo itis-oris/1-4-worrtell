@@ -166,13 +166,6 @@
                                 </button>
                             </form>
                         </div>
-                        <div sec:authorize="hasRole('USER')">
-                            <form th:action="@{/cart/add/{id}(id=${item.id})}" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-primary action-btn me-2">
-                                    <i class="bi bi-cart-plus me-2"></i>В корзину
-                                </button>
-                            </form>
-                        </div>
                     </div>
                 </div>
             </div>

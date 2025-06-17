@@ -8,6 +8,7 @@ import dev.wortel.meshok.service.CartService;
 import dev.wortel.meshok.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
+@PreAuthorize("hasRole('USER')")
 @RequestMapping("/cart")
 @RequiredArgsConstructor
 public class CartController {

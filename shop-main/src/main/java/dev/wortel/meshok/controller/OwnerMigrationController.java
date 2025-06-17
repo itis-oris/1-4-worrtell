@@ -1,5 +1,6 @@
 package dev.wortel.meshok.controller;
 
+import dev.wortel.meshok.error.BusinessException;
 import dev.wortel.meshok.service.MigrationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,19 +30,26 @@ public class OwnerMigrationController {
                 redirectAttributes.addFlashAttribute("successMessage",
                         "Миграция успешно запущена. Обрабатывается: " + result.get("itemsProcessed") + " элементов.");
             } else {
-                redirectAttributes.addFlashAttribute("errorMessage",
-                        "Не удалось запустить миграцию: " + result.get("error"));
+                log.info("Не удалось запустить миграцию");
+                redirectAttributes.addFlashAttribute("errorMessage", "Не удалось запустить миграцию: " + result.get("error"));
+                throw new BusinessException("Не удалось запустить миграцию: " + result.get("error"));
             }
         } catch (Exception e) {
-            log.error("Error triggering migration from admin panel", e);
-            redirectAttributes.addFlashAttribute("errorMessage",
-                    "Произошла ошибка при запуске миграции: " + e.getMessage());
+            log.info("Error triggering migration from admin panel", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Произошла ошибка при запуске миграции: " + e.getMessage());
+            throw new BusinessException("Error triggering migration from admin panel");
         }
         return "redirect:/owner/migration";
     }
 
     @GetMapping
     public String start(Model model) {
+        model.addAttribute("migrationStatus", "running");
+        return "owner/migration";
+    }
+
+    @PostMapping
+    public String migration(Model model) {
         model.addAttribute("migrationStatus", "running");
         return "owner/migration";
     }

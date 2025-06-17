@@ -9,6 +9,7 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EntityScan({"dev.wortel.meshok.entity", "entity"})

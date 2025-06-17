@@ -2,6 +2,7 @@ package dev.wortel.meshok.controller;
 
 import dev.wortel.meshok.dto.ItemDisplayDto;
 import dev.wortel.meshok.dto.OrderDto;
+import dev.wortel.meshok.security.auth.CheckOrderAccess;
 import entity.Item;
 import dev.wortel.meshok.entity.Order;
 import dev.wortel.meshok.entity.PaymentMethod;
@@ -12,6 +13,9 @@ import dev.wortel.meshok.service.OrderService;
 import dev.wortel.meshok.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -43,8 +47,10 @@ public class OrderController {
         return "orders/list";
     }
 
+    @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/owner")
-    public String viewAllOrders(Model model) {
+    public String viewAllOrders(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("Доступ для пользователя: {}", userDetails.getAuthorities());
         List<Order> orders = orderService.getAllOrders();
 
         model.addAttribute("orders", orders);
@@ -52,6 +58,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
+    @CheckOrderAccess
     public String viewOrderDetails(@PathVariable Long id, Principal principal, Model model) {
         if (principal == null) {
             return "redirect:/login";
