@@ -6,6 +6,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebSecurity
@@ -14,8 +15,16 @@ public class WebSecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         HttpSecurity httpSecurity = http.authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/error").permitAll()
-                        .requestMatchers("/registration", "/login").permitAll()
+                        .requestMatchers(
+                                "/",
+                                "/error",
+                                "/registration",
+                                "/login",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
@@ -32,6 +41,12 @@ public class WebSecurityConfiguration {
                         .deleteCookies("JSESSIONID")
                         .clearAuthentication(true)
                         .permitAll())
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**"
+                        )
+                );
                 ;
 //                .oneTimeTokenLogin(Customizer.withDefaults())
 //                .oauth2Login(Customizer.withDefaults());

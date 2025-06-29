@@ -17,5 +17,7 @@ public class WebConfigurer implements WebMvcConfigurer {
                 .setViewName("redirect:/items");
         registry.addViewController("/{path:[a-zA-Z0-9-]+}/**")
                 .setViewName("redirect:/items");
+        registry.addViewController("/swagger-ui")
+                .setViewName("forward:/swagger-ui/index.html");
     }
 }
