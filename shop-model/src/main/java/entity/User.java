@@ -39,6 +39,5 @@ public class User implements Serializable {
 
     public boolean isActive() {
         return true;
-        //return status == UserStatus.ACTIVE;
     }
 }

@@ -1,44 +1,44 @@
 spring:
   profiles:
-    active: dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   docker:
     compose:
-      enabled: false
+      enabled: ${DOCKER_COMPOSE_ENABLED:false}
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: wortel
-    password: "1563"
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: ${DATASOURCE_USERNAME:wortel}
+    password: ${DATASOURCE_PASSWORD:1563}
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: ${HIBERNATE_DDL_AUTO:update}
+    show-sql: ${SHOW_SQL:true}
   session:
     jdbc:
-      initialize-schema: always
+      initialize-schema: ${JDBC_INIT_SCHEMA:always}
   thymeleaf:
-    prefix: classpath:/templates/
+    prefix: ${THYMELEAF_PREFIX:classpath:/templates/}
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 50MB
+      max-file-size: ${MAX_FILE_SIZE:10MB}
+      max-request-size: ${MAX_REQUEST_SIZE:50MB}
 
 server:
-  port: 8080
-  url: http://localhost:8080
+  port: ${SERVER_PORT:8080}
+  url: ${SERVER_URL:http://localhost:8080}
 
 yandex:
   s3:
-    access-key: YCAJEoqWkMNns1jXfYwQtdqIU
-    secret-key: YCN-V0H_cYN41KlMZfKSUi05jLmeWh6nca5EjRGl
-    bucket: meshok
-    endpoint: https://storage.yandexcloud.net
-    region: ru-central1
+    access-key: ${YANDEX_S3_ACCESS_KEY}
+    secret-key: ${YANDEX_S3_SECRET_KEY}
+    bucket: ${YANDEX_S3_BUCKET:meshok}
+    endpoint: ${YANDEX_S3_ENDPOINT:https://storage.yandexcloud.net}
+    region: ${YANDEX_S3_REGION:ru-central1}
   disk:
-    public-url: https://disk.yandex.ru/client/disk/meshok
+    public-url: ${YANDEX_DISK_PUBLIC_URL:https://disk.yandex.ru/client/disk/meshok}
 
 meshok:
-  access-token: f3cfb2cb5903df0f48231453f1877108
-  base-url: https://meshok.net/i/
+  access-token: ${MESHOK_ACCESS_TOKEN}
+  base-url: ${MESHOK_BASE_URL:https://meshok.net/i/}
 
 load:
   cron:
